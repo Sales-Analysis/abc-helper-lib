@@ -1,13 +1,13 @@
 package abc
 
 import (
-	"fmt"
 	"testing"
 )
 
 
 func TestABC(t *testing.T) {
 
-	fmt.Println("okey")
+	instance := New()
+	t.Log(instance.Calculate())
 
 }
