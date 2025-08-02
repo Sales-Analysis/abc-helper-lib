@@ -11,3 +11,8 @@ type ABC struct {
 	ShareAccumulated []float64
 	Group []string
 }
+
+
+func New() *ABC {
+	return &ABC{}
+}
