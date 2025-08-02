@@ -16,3 +16,8 @@ type ABC struct {
 func New() *ABC {
 	return &ABC{}
 }
+
+
+func (a *ABC) Calculate() int{
+	return 0
+}
