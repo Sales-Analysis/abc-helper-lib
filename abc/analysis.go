@@ -5,9 +5,9 @@ import (
 )
 
 type ABC struct {
-	ID []int
+	SKU []int
 	Name []string
-	count []int
+	Quantity []int
 	PriceUnit []float64
 	PriceAll []float64
 	ShareTotal []float64
