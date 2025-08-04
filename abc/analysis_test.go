@@ -1,13 +1,14 @@
-package abc
+package abc_test
 
 import (
 	"testing"
+	"github.com/Sales-Analysis/abc-helper-lib/abc"
 )
 
 
 func TestABC(t *testing.T) {
 
-	products := []Product{
+	products := []abc.Product{
 		{SKU: "T001", Name: "Клавиатура механическая", Quantity: 50, Price: 80.00},
 		{SKU: "T002", Name: "Мышь беспроводная", Quantity: 150, Price: 30.00},
 		{SKU: "T003", Name: "USB-хаб 7 портов", Quantity: 80, Price: 25.00},
@@ -20,7 +21,7 @@ func TestABC(t *testing.T) {
 		{SKU: "T010", Name: "Чистящий спрей для экрана", Quantity: 400, Price: 4.00},
 	}
 
-	instance := New()
+	instance := abc.New()
 	t.Log(instance.Calculate(products))
 
 }
