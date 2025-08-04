@@ -1,5 +1,8 @@
 package abc
 
+import (
+	"fmt"
+)
 
 type ABC struct {
 	ID []int
@@ -18,6 +21,7 @@ func New() *ABC {
 }
 
 
-func (a *ABC) Calculate() int{
+func (a *ABC) Calculate(products []Product) int{
+	fmt.Println(products)
 	return 0
 }
