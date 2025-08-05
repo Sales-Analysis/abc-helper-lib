@@ -29,7 +29,7 @@ func (a *ABC) Calculate(products []Product) int{
 
 
 func (a *ABC) priceTotal(products []Product) []float64{
-	var total []float64
+	total := []float64{}
 	for _, value := range products {
 		total = append(total, float64(value.Quantity) * value.Price)
 	}
