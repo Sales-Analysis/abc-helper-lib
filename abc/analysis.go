@@ -22,6 +22,16 @@ func New() *ABC {
 
 
 func (a *ABC) Calculate(products []Product) int{
-	fmt.Println(products)
+	total := a.priceTotal(products)
+	fmt.Println("Total:", total) 
 	return 0
+}
+
+
+func (a *ABC) priceTotal(products []Product) []float64{
+	var total []float64
+	for _, value := range products {
+		total = append(total, float64(value.Quantity) * value.Price)
+	}
+	return total
 }
