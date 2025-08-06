@@ -1,7 +1,7 @@
 package abc
 
 type ABC struct {
-	SKU              []int
+	SKU              []string
 	Name             []string
 	Quantity         []int
 	PriceUnit        []float64
@@ -19,8 +19,11 @@ type Product struct {
 	Price    float64
 }
 
-// pair is an unexported struct used to link a value with its original index for sorting.
+// The pair is an unexported struct used to link a value with its original index for sorting.
 type pair struct {
-	value int
+	value float64
 	index int
 }
+
+// Private type for sorting
+type byValue []pair
