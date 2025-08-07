@@ -14,7 +14,7 @@ func (a *ABC) Calculate(products []Product) int {
 	grandTotal := a.calculateGrandTotal(a.PriceTotal)
 	a.rankProductsByValue(products)
 	calculateCostPercentage(a.PriceTotal, grandTotal)
-	fmt.Println(grandTotal)
+	fmt.Println(a)
 	return 0
 }
 
@@ -42,17 +42,8 @@ func (a byValue) Less(i, j int) bool { return a[i].value > a[j].value }
 
 // Ranking products by importance
 func (a *ABC) rankProductsByValue(products []Product) int {
-	indexes := []int{}
-	for i := range a.PriceTotal {
-		indexes = append(indexes, i)
-	}
-
-	pairs := make(byValue, len(a.PriceTotal))
-
-	for i := 0; i < len(a.PriceTotal); i++ {
-		pairs[i] = pair{a.PriceTotal[i], indexes[i]}
-	}
-	sort.Sort(pairs)
+	indexes := createIndexesSlice(len(a.PriceTotal))
+	pairs := sortIndexByValue(indexes, a.PriceTotal)
 
 	for i, value := range pairs {
 		a.PriceTotal[i] = value.value
@@ -62,6 +53,24 @@ func (a *ABC) rankProductsByValue(products []Product) int {
 		a.PriceUnit = append(a.PriceUnit, products[value.index].Price)
 	}
 	return 0
+}
+
+func createIndexesSlice(lenSlice int) []int {
+	indexes := []int{}
+	for i := 0; i < lenSlice; i++ {
+		indexes = append(indexes, i)
+	}
+	return indexes
+}
+
+func sortIndexByValue(indexes []int, values []float64) byValue {
+	pairs := make(byValue, len(values))
+
+	for i := 0; i < len(values); i++ {
+		pairs[i] = pair{values[i], indexes[i]}
+	}
+	sort.Sort(pairs)
+	return pairs
 }
 
 func calculateCostPercentage(priceTotal []float64, grandTotal float64) []float64 {
