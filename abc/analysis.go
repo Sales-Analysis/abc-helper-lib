@@ -13,9 +13,9 @@ func (a *ABC) Calculate(products []Product) int {
 	priceTotal := a.calculatePriceTotal(products)
 	grandTotal := a.calculateGrandTotal(priceTotal)
 	pairs := a.rankProductsByValue(priceTotal)
-	costPercentage := calculateCostPercentage(pairs, grandTotal)
-	accumulatedShare := calculateAccumulatedShare(costPercentage)
-	groups := assignGroup(accumulatedShare)
+	costPercentage := a.calculateCostPercentage(pairs, grandTotal)
+	accumulatedShare := a.calculateAccumulatedShare(costPercentage)
+	groups := a.assignGroup(accumulatedShare)
 	fmt.Println(groups)
 	return 0
 }
@@ -67,7 +67,7 @@ func sortIndexByValue(indexes []int, values []float64) byValue {
 	return pairs
 }
 
-func calculateCostPercentage(pairs byValue, grandTotal float64) []float64 {
+func (a *ABC) calculateCostPercentage(pairs byValue, grandTotal float64) []float64 {
 	costPercentage := []float64{}
 	for _, value := range pairs {
 		v := (value.value / grandTotal) * 100
@@ -76,7 +76,7 @@ func calculateCostPercentage(pairs byValue, grandTotal float64) []float64 {
 	return costPercentage
 }
 
-func calculateAccumulatedShare(costPercentage []float64) []float64 {
+func (a *ABC) calculateAccumulatedShare(costPercentage []float64) []float64 {
 	accumulatedShare := []float64{}
 	as := 0.0
 	for _, value := range costPercentage {
@@ -86,7 +86,7 @@ func calculateAccumulatedShare(costPercentage []float64) []float64 {
 	return accumulatedShare
 }
 
-func assignGroup(accumulatedShare []float64) []string {
+func (a *ABC) assignGroup(accumulatedShare []float64) []string {
 	groups := []string{}
 	for _, value := range accumulatedShare {
 		if value <= 80 {
