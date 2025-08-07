@@ -14,7 +14,9 @@ func (a *ABC) Calculate(products []Product) int {
 	grandTotal := a.calculateGrandTotal(priceTotal)
 	pairs := a.rankProductsByValue(priceTotal)
 	costPercentage := calculateCostPercentage(pairs, grandTotal)
-	fmt.Println(costPercentage)
+	accumulatedShare := calculateAccumulatedShare(costPercentage)
+	groups := assignGroup(accumulatedShare)
+	fmt.Println(groups)
 	return 0
 }
 
@@ -72,4 +74,28 @@ func calculateCostPercentage(pairs byValue, grandTotal float64) []float64 {
 		costPercentage = append(costPercentage, v)
 	}
 	return costPercentage
+}
+
+func calculateAccumulatedShare(costPercentage []float64) []float64 {
+	accumulatedShare := []float64{}
+	as := 0.0
+	for _, value := range costPercentage {
+		as += value
+		accumulatedShare = append(accumulatedShare, as)
+	}
+	return accumulatedShare
+}
+
+func assignGroup(accumulatedShare []float64) []string {
+	groups := []string{}
+	for _, value := range accumulatedShare {
+		if value <= 80 {
+			groups = append(groups, "A")
+		} else if (value > 80) && (value <= 95) {
+			groups = append(groups, "B")
+		} else {
+			groups = append(groups, "C")
+		}
+	}
+	return groups
 }
