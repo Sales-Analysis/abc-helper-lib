@@ -1,15 +1,7 @@
 package abc
 
 type ABC struct {
-	SKU              []string
-	Name             []string
-	Quantity         []int
-	PriceUnit        []float64
-	PriceTotal       []float64
-	ShareTotal       []float64
-	ShareAccumulated []float64
-	Group            []string
-	Result           []ProductResult
+	Result []ProductResult
 }
 
 // Product is the input struct for the analysis.
@@ -36,6 +28,3 @@ type pair struct {
 	value float64
 	index int
 }
-
-// Private type for sorting
-type byValue []pair

@@ -1,54 +1,62 @@
 package abc
 
 import (
-	"fmt"
 	"sort"
 )
 
+// Constructor for the ABC struct. Creates and returns a new empty ABC object.
 func New() *ABC {
 	return &ABC{}
 }
 
-func (a *ABC) Calculate(products []Product) int {
+// Main method that runs the entire ABC analysis workflow
+func (a *ABC) Calculate(products []Product) {
 	priceTotal := a.calculatePriceTotal(products)
 	grandTotal := a.calculateGrandTotal(priceTotal)
 	pairs := a.rankProductsByValue(priceTotal)
 	costPercentage := a.calculateCostPercentage(pairs, grandTotal)
 	accumulatedShare := a.calculateAccumulatedShare(costPercentage)
 	groups := a.assignGroup(accumulatedShare)
-	fmt.Println(groups)
-	return 0
+
+	a.Result = a.buildResults(products, priceTotal, pairs, costPercentage, accumulatedShare, groups)
 }
 
-// Determining each product's contribution to total revenue
-func (a *ABC) calculatePriceTotal(products []Product) []float64 {
-	total := []float64{}
-	for _, value := range products {
-		total = append(total, float64(value.Quantity)*value.Price)
+// buildResults compiles the final list of ProductResult from calculation data.
+func (a *ABC) buildResults(
+	products []Product,
+	priceTotal []float64,
+	pairs byValue,
+	costPercentage []float64,
+	accumulatedShare []float64,
+	groups []string,
+) []ProductResult {
+
+	results := make([]ProductResult, len(products))
+	for i, pair := range pairs {
+		idx := pair.index
+
+		results[i] = ProductResult{
+			SKU:              products[idx].SKU,
+			Name:             products[idx].Name,
+			Quantity:         products[idx].Quantity,
+			PriceUnit:        products[idx].Price,
+			PriceTotal:       priceTotal[idx],
+			ShareTotal:       costPercentage[i],
+			ShareAccumulated: accumulatedShare[i],
+			Group:            groups[i],
+		}
 	}
-	return total
+	return results
 }
 
-// CalculateGrandTotal sums a slice of totals and returns the grand total.
-func (a *ABC) calculateGrandTotal(totals []float64) float64 {
-	var grandTotal float64
-	for _, total := range totals {
-		grandTotal += total
-	}
-	return grandTotal
-}
-
-func (a byValue) Len() int           { return len(a) }
-func (a byValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byValue) Less(i, j int) bool { return a[i].value > a[j].value }
-
-// Ranking products by importance
+// Generates a list of product indexes and sorts them by their revenue in descending order.
 func (a *ABC) rankProductsByValue(priceTotal []float64) byValue {
 	indexes := createIndexesSlice(len(priceTotal))
 	pairs := sortIndexByValue(indexes, priceTotal)
 	return pairs
 }
 
+// Creates a slice of sequential indexes [0, 1, 2, ...].
 func createIndexesSlice(lenSlice int) []int {
 	indexes := []int{}
 	for i := 0; i < lenSlice; i++ {
@@ -57,6 +65,7 @@ func createIndexesSlice(lenSlice int) []int {
 	return indexes
 }
 
+// Creates an array of (value, index) pairs and sorts them in descending order of value.
 func sortIndexByValue(indexes []int, values []float64) byValue {
 	pairs := make(byValue, len(values))
 
@@ -65,37 +74,4 @@ func sortIndexByValue(indexes []int, values []float64) byValue {
 	}
 	sort.Sort(pairs)
 	return pairs
-}
-
-func (a *ABC) calculateCostPercentage(pairs byValue, grandTotal float64) []float64 {
-	costPercentage := []float64{}
-	for _, value := range pairs {
-		v := (value.value / grandTotal) * 100
-		costPercentage = append(costPercentage, v)
-	}
-	return costPercentage
-}
-
-func (a *ABC) calculateAccumulatedShare(costPercentage []float64) []float64 {
-	accumulatedShare := []float64{}
-	as := 0.0
-	for _, value := range costPercentage {
-		as += value
-		accumulatedShare = append(accumulatedShare, as)
-	}
-	return accumulatedShare
-}
-
-func (a *ABC) assignGroup(accumulatedShare []float64) []string {
-	groups := []string{}
-	for _, value := range accumulatedShare {
-		if value <= 80 {
-			groups = append(groups, "A")
-		} else if (value > 80) && (value <= 95) {
-			groups = append(groups, "B")
-		} else {
-			groups = append(groups, "C")
-		}
-	}
-	return groups
 }
