@@ -8,10 +8,16 @@ The `abc` package contains the core logic for ABC analysis:
 - Determines percentage and accumulated share
 - Assigns ABC categories
 - Returns results in a structured format (`ProductResult`)
+- Exposes a stateless API for orchestration and composite analyses
 
 ### Structures
 
 ```go
+type Input struct {
+    Products   []Product
+    Thresholds Thresholds
+}
+
 type Product struct {
     SKU      string
     Name     string
@@ -29,6 +35,11 @@ type ProductResult struct {
     ShareAccumulated float64
     Group            string
 }
+
+type Output struct {
+    Results      []ProductResult
+    TotalRevenue float64
+}
 ```
 
 ### Usage Example
@@ -38,7 +49,7 @@ package main
 
 import (
     "fmt"
-    "gitlab.com/username/abc-helper-lib/abc"
+    "github.com/Sales-Analysis/abc-helper-lib/abc"
 )
 
 func main() {
@@ -48,14 +59,21 @@ func main() {
         {SKU: "003", Name: "Product C", Quantity: 1, Price: 5},
     }
 
-    analysis := abc.New()
-    analysis.Calculate(products)
+    output, err := abc.Analyze(nil, abc.Input{Products: products})
+    if err != nil {
+        panic(err)
+    }
 
-    for _, r := range analysis.Result {
+    for _, r := range output.Results {
         fmt.Printf("%+v\n", r)
     }
 }
 ```
+
+### Legacy API
+
+The old stateful API based on `abc.New()` and `(*ABC).Calculate(...)` is still available
+for backward compatibility, but it is deprecated in favor of `Analyze(...)`.
 
 ### Running Tests
 

@@ -5,12 +5,12 @@ import (
 	"sort"
 )
 
-// Constructor for the ABC struct. Creates and returns a new empty ABC object.
+// Deprecated: use Analyze or AnalyzeDetailed instead of New and Calculate.
 func New() *ABC {
 	return &ABC{}
 }
 
-// Main method that runs the entire ABC analysis workflow
+// Deprecated: use Analyze or AnalyzeDetailed instead of the stateful Calculate method.
 func (a *ABC) Calculate(products []Product) {
 	output, err := Analyze(context.Background(), Input{Products: products})
 	if err != nil {

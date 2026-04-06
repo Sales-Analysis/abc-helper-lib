@@ -1,5 +1,6 @@
 package abc
 
+// Deprecated: use Analyze or AnalyzeDetailed instead of the stateful ABC type.
 type ABC struct {
 	Result []ProductResult
 }
