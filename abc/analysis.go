@@ -1,6 +1,7 @@
 package abc
 
 import (
+	"context"
 	"sort"
 )
 
@@ -11,14 +12,12 @@ func New() *ABC {
 
 // Main method that runs the entire ABC analysis workflow
 func (a *ABC) Calculate(products []Product) {
-	priceTotal := a.calculatePriceTotal(products)
-	grandTotal := a.calculateGrandTotal(priceTotal)
-	pairs := a.rankProductsByValue(priceTotal)
-	costPercentage := a.calculateCostPercentage(pairs, grandTotal)
-	accumulatedShare := a.calculateAccumulatedShare(costPercentage)
-	groups := a.assignGroup(accumulatedShare)
-
-	a.Result = a.buildResults(products, priceTotal, pairs, costPercentage, accumulatedShare, groups)
+	output, err := Analyze(context.Background(), Input{Products: products})
+	if err != nil {
+		a.Result = nil
+		return
+	}
+	a.Result = output.Results
 }
 
 // buildResults compiles the final list of ProductResult from calculation data.

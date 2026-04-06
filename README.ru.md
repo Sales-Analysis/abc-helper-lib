@@ -10,8 +10,13 @@
 
 ### Описание
 
-`abc-helper-lib` — библиотека на Go для ABC-анализа товарных данных.
-Классифицирует товары на группы A, B и C в зависимости от вклада в общую выручку.
+`abc-helper-lib` — библиотека на Go для товарной и клиентской аналитики.
+
+Текущий фундамент включает:
+
+- тонкий корневой facade для orchestration;
+- доменное разделение на `inventory` и `customer`;
+- реализованные товарные анализы: `ABC`, `XYZ`, `ABC-XYZ`.
 
 ### Установка
 
@@ -24,9 +29,13 @@ go get gitlab.com/username/abc-helper-lib@latest
 ```
 abc-helper-lib/
 │
-├── abc/                # Основной пакет ABC-анализа
+├── abc/                # ABC-анализ
+├── xyz/                # XYZ-анализ
+├── abcxyz/             # Комбинированный ABC-XYZ
+├── inventory/          # Facade товарной аналитики
+├── customer/           # Каркас facade клиентской аналитики
+├── facade.go           # Корневой analytics facade
 ├── go.mod
-├── go.sum
 ├── README.md           # Общее описание проекта
 └── LICENSE
 ```
