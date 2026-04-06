@@ -16,7 +16,7 @@ The current foundation includes:
 
 - a thin root facade for orchestration;
 - domain separation into `inventory` and `customer`;
-- implemented inventory analyses: `ABC`, `XYZ`, `ABC-XYZ`.
+- implemented inventory analyses: `ABC`, `XYZ`, `ABC-XYZ`, `VED`, `FSN`, `HML`, `SDE`, `EOQ`, `Reorder Point`, `Safety Stock`.
 
 ### Installation
 
@@ -32,6 +32,13 @@ abc-helper-lib/
 ├── abc/                # ABC analysis
 ├── xyz/                # XYZ analysis
 ├── abcxyz/             # Combined ABC-XYZ analysis
+├── ved/                # VED analysis
+├── fsn/                # FSN analysis
+├── hml/                # HML analysis
+├── sde/                # SDE analysis
+├── eoq/                # EOQ calculation
+├── reorderpoint/       # Reorder point calculation
+├── safetystock/        # Safety stock calculation
 ├── inventory/          # Inventory facade
 ├── customer/           # Customer facade scaffold
 ├── facade.go           # Root analytics facade
