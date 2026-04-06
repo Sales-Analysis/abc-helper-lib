@@ -8,10 +8,16 @@
 - Определяет процентную и накопленную долю
 - Присваивает ABC-категории
 - Возвращает результаты в структурированном виде (`ProductResult`)
+- Предоставляет stateless API для orchestration и составных анализов
 
 ### Структуры
 
 ```go
+type Input struct {
+    Products   []Product
+    Thresholds Thresholds
+}
+
 type Product struct {
     SKU      string
     Name     string
@@ -29,6 +35,11 @@ type ProductResult struct {
     ShareAccumulated float64
     Group            string
 }
+
+type Output struct {
+    Results      []ProductResult
+    TotalRevenue float64
+}
 ```
 
 ### Пример использования
@@ -38,7 +49,7 @@ package main
 
 import (
     "fmt"
-    "gitlab.com/username/abc-helper-lib/abc"
+    "github.com/Sales-Analysis/abc-helper-lib/abc"
 )
 
 func main() {
@@ -48,14 +59,21 @@ func main() {
         {SKU: "003", Name: "Товар C", Quantity: 1, Price: 5},
     }
 
-    analysis := abc.New()
-    analysis.Calculate(products)
+    output, err := abc.Analyze(nil, abc.Input{Products: products})
+    if err != nil {
+        panic(err)
+    }
 
-    for _, r := range analysis.Result {
+    for _, r := range output.Results {
         fmt.Printf("%+v\n", r)
     }
 }
 ```
+
+### Legacy API
+
+Старый stateful API на базе `abc.New()` и `(*ABC).Calculate(...)` оставлен
+для обратной совместимости, но помечен deprecated в пользу `Analyze(...)`.
 
 ### Запуск тестов
 
