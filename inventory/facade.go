@@ -21,6 +21,7 @@ import (
 // Facade groups inventory-focused analyses behind a small orchestration layer.
 type Facade struct{}
 
+// New creates an inventory analytics facade.
 func New() *Facade {
 	return &Facade{}
 }

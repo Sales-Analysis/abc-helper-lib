@@ -11,6 +11,7 @@ import (
 // Facade groups customer-focused analytics behind a small orchestration layer.
 type Facade struct{}
 
+// New creates a customer analytics facade.
 func New() *Facade {
 	return &Facade{}
 }

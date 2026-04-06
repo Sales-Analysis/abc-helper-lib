@@ -11,6 +11,7 @@ type Facade struct {
 	customer  *customer.Facade
 }
 
+// New creates the root analytics facade.
 func New() *Facade {
 	return &Facade{
 		inventory: inventory.New(),
@@ -18,6 +19,7 @@ func New() *Facade {
 	}
 }
 
+// Inventory returns the inventory analytics facade.
 func (f *Facade) Inventory() *inventory.Facade {
 	if f == nil || f.inventory == nil {
 		return inventory.New()
@@ -25,6 +27,7 @@ func (f *Facade) Inventory() *inventory.Facade {
 	return f.inventory
 }
 
+// Customer returns the customer analytics facade.
 func (f *Facade) Customer() *customer.Facade {
 	if f == nil || f.customer == nil {
 		return customer.New()
