@@ -16,7 +16,7 @@
 
 - тонкий корневой facade для orchestration;
 - доменное разделение на `inventory` и `customer`;
-- реализованные товарные анализы: `ABC`, `XYZ`, `ABC-XYZ`.
+- реализованные товарные анализы: `ABC`, `XYZ`, `ABC-XYZ`, `VED`, `FSN`, `HML`, `SDE`, `EOQ`, `Reorder Point`, `Safety Stock`.
 
 ### Установка
 
@@ -32,6 +32,13 @@ abc-helper-lib/
 ├── abc/                # ABC-анализ
 ├── xyz/                # XYZ-анализ
 ├── abcxyz/             # Комбинированный ABC-XYZ
+├── ved/                # VED-анализ
+├── fsn/                # FSN-анализ
+├── hml/                # HML-анализ
+├── sde/                # SDE-анализ
+├── eoq/                # Расчет EOQ
+├── reorderpoint/       # Расчет точки заказа
+├── safetystock/        # Расчет страхового запаса
 ├── inventory/          # Facade товарной аналитики
 ├── customer/           # Каркас facade клиентской аналитики
 ├── facade.go           # Корневой analytics facade
