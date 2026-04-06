@@ -39,25 +39,109 @@ cust := svc.Customer()
 
 Inventory analyses:
 
-- `inv.ABC(ctx, abc.Input{Products: []abc.Product{{SKU: "A", Name: "Item A", Quantity: 10, Price: 100}}})`
-- `inv.XYZ(ctx, xyz.Input{Items: []xyz.Item{{SKU: "A", Name: "Item A", Demands: []float64{10, 12, 9}}}})`
-- `inv.ABCXYZ(ctx, abcxyz.Input{Items: []abcxyz.Item{{SKU: "A", Name: "Item A", Quantity: 10, Price: 100, Demands: []float64{10, 12, 9}}}})`
-- `inv.VED(ctx, ved.Input{Items: []ved.Item{{SKU: "A", Name: "Item A", CriticalityScore: 85}}})`
-- `inv.FSN(ctx, fsn.Input{Items: []fsn.Item{{SKU: "A", Name: "Item A", Movements: []float64{3, 0, 2, 1}}}})`
-- `inv.HML(ctx, hml.Input{Items: []hml.Item{{SKU: "A", Name: "Item A", UnitCost: 250}}})`
-- `inv.SDE(ctx, sde.Input{Items: []sde.Item{{SKU: "A", Name: "Item A", LeadTimeDays: 45}}})`
-- `inv.EOQ(ctx, eoq.Input{Items: []eoq.Item{{SKU: "A", Name: "Item A", AnnualDemand: 1200, OrderingCost: 50, HoldingCost: 2}}})`
-- `inv.ReorderPoint(ctx, reorderpoint.Input{Items: []reorderpoint.Item{{SKU: "A", Name: "Item A", AverageDemandPerPeriod: 20, LeadTimePeriods: 4, SafetyStock: 33}}})`
-- `inv.SafetyStock(ctx, safetystock.Input{Items: []safetystock.Item{{SKU: "A", Name: "Item A", DemandStdDev: 10, LeadTimePeriods: 4, ServiceFactor: 1.65}}})`
-- `inv.Pareto(ctx, pareto.Input{Items: []pareto.Item{{SKU: "A", Name: "Item A", Value: 1000}}})`
-- `inv.GMContribution(ctx, gmcontribution.Input{Items: []gmcontribution.Item{{SKU: "A", Name: "Item A", Revenue: 1000, COGS: 600, VariableCost: 700, FixedCost: 100}}})`
-- `inv.ServiceLevel(ctx, servicelevel.Input{Items: []servicelevel.Item{{SKU: "A", Name: "Item A", DemandedUnits: 100, FulfilledUnits: 95, TotalCycles: 20, StockoutCycles: 2}}})`
+```go
+_, _ = inv.ABC(ctx, abc.Input{
+    Products: []abc.Product{
+        {SKU: "A", Name: "Item A", Quantity: 10, Price: 100},
+    },
+})
+
+_, _ = inv.XYZ(ctx, xyz.Input{
+    Items: []xyz.Item{
+        {SKU: "A", Name: "Item A", Demands: []float64{10, 12, 9}},
+    },
+})
+
+_, _ = inv.ABCXYZ(ctx, abcxyz.Input{
+    Items: []abcxyz.Item{
+        {SKU: "A", Name: "Item A", Quantity: 10, Price: 100, Demands: []float64{10, 12, 9}},
+    },
+})
+
+_, _ = inv.VED(ctx, ved.Input{
+    Items: []ved.Item{
+        {SKU: "A", Name: "Item A", CriticalityScore: 85},
+    },
+})
+
+_, _ = inv.FSN(ctx, fsn.Input{
+    Items: []fsn.Item{
+        {SKU: "A", Name: "Item A", Movements: []float64{3, 0, 2, 1}},
+    },
+})
+
+_, _ = inv.HML(ctx, hml.Input{
+    Items: []hml.Item{
+        {SKU: "A", Name: "Item A", UnitCost: 250},
+    },
+})
+
+_, _ = inv.SDE(ctx, sde.Input{
+    Items: []sde.Item{
+        {SKU: "A", Name: "Item A", LeadTimeDays: 45},
+    },
+})
+
+_, _ = inv.EOQ(ctx, eoq.Input{
+    Items: []eoq.Item{
+        {SKU: "A", Name: "Item A", AnnualDemand: 1200, OrderingCost: 50, HoldingCost: 2},
+    },
+})
+
+_, _ = inv.ReorderPoint(ctx, reorderpoint.Input{
+    Items: []reorderpoint.Item{
+        {SKU: "A", Name: "Item A", AverageDemandPerPeriod: 20, LeadTimePeriods: 4, SafetyStock: 33},
+    },
+})
+
+_, _ = inv.SafetyStock(ctx, safetystock.Input{
+    Items: []safetystock.Item{
+        {SKU: "A", Name: "Item A", DemandStdDev: 10, LeadTimePeriods: 4, ServiceFactor: 1.65},
+    },
+})
+
+_, _ = inv.Pareto(ctx, pareto.Input{
+    Items: []pareto.Item{
+        {SKU: "A", Name: "Item A", Value: 1000},
+    },
+})
+
+_, _ = inv.GMContribution(ctx, gmcontribution.Input{
+    Items: []gmcontribution.Item{
+        {SKU: "A", Name: "Item A", Revenue: 1000, COGS: 600, VariableCost: 700, FixedCost: 100},
+    },
+})
+
+_, _ = inv.ServiceLevel(ctx, servicelevel.Input{
+    Items: []servicelevel.Item{
+        {SKU: "A", Name: "Item A", DemandedUnits: 100, FulfilledUnits: 95, TotalCycles: 20, StockoutCycles: 2},
+    },
+})
+```
 
 Customer analyses:
 
-- `cust.RFM(ctx, rfm.Input{AnalysisTime: time.Now(), Customers: []rfm.Customer{{CustomerID: "C1", Name: "Customer 1", LastOrderAt: time.Now().AddDate(0, 0, -10), Orders: 5, MonetaryValue: 1200}}})`
-- `cust.CLV(ctx, clv.Input{Customers: []clv.Customer{{CustomerID: "C1", Name: "Customer 1", Revenue: 1200, Orders: 6, PeriodsObserved: 3, GrossMarginRate: 0.4, RetentionRate: 0.8, DiscountRate: 0.1, AcquisitionCost: 50}}})`
-- `cust.Churn(ctx, churn.Input{AnalysisTime: time.Now(), Customers: []churn.Customer{{CustomerID: "C1", Name: "Customer 1", LastOrderAt: time.Now().AddDate(0, 0, -45)}}})`
+```go
+_, _ = cust.RFM(ctx, rfm.Input{
+    AnalysisTime: time.Now(),
+    Customers: []rfm.Customer{
+        {CustomerID: "C1", Name: "Customer 1", LastOrderAt: time.Now().AddDate(0, 0, -10), Orders: 5, MonetaryValue: 1200},
+    },
+})
+
+_, _ = cust.CLV(ctx, clv.Input{
+    Customers: []clv.Customer{
+        {CustomerID: "C1", Name: "Customer 1", Revenue: 1200, Orders: 6, PeriodsObserved: 3, GrossMarginRate: 0.4, RetentionRate: 0.8, DiscountRate: 0.1, AcquisitionCost: 50},
+    },
+})
+
+_, _ = cust.Churn(ctx, churn.Input{
+    AnalysisTime: time.Now(),
+    Customers: []churn.Customer{
+        {CustomerID: "C1", Name: "Customer 1", LastOrderAt: time.Now().AddDate(0, 0, -45)},
+    },
+})
+```
 
 Minimal import set for these examples:
 
