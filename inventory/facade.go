@@ -7,10 +7,13 @@ import (
 	"github.com/Sales-Analysis/abc-helper-lib/abcxyz"
 	"github.com/Sales-Analysis/abc-helper-lib/eoq"
 	"github.com/Sales-Analysis/abc-helper-lib/fsn"
+	"github.com/Sales-Analysis/abc-helper-lib/gmcontribution"
 	"github.com/Sales-Analysis/abc-helper-lib/hml"
+	"github.com/Sales-Analysis/abc-helper-lib/pareto"
 	"github.com/Sales-Analysis/abc-helper-lib/reorderpoint"
 	"github.com/Sales-Analysis/abc-helper-lib/safetystock"
 	"github.com/Sales-Analysis/abc-helper-lib/sde"
+	"github.com/Sales-Analysis/abc-helper-lib/servicelevel"
 	"github.com/Sales-Analysis/abc-helper-lib/ved"
 	"github.com/Sales-Analysis/abc-helper-lib/xyz"
 )
@@ -60,4 +63,16 @@ func (f *Facade) ReorderPoint(ctx context.Context, input reorderpoint.Input) (re
 
 func (f *Facade) SafetyStock(ctx context.Context, input safetystock.Input) (safetystock.Output, error) {
 	return safetystock.Analyze(ctx, input)
+}
+
+func (f *Facade) Pareto(ctx context.Context, input pareto.Input) (pareto.Output, error) {
+	return pareto.Analyze(ctx, input)
+}
+
+func (f *Facade) GMContribution(ctx context.Context, input gmcontribution.Input) (gmcontribution.Output, error) {
+	return gmcontribution.Analyze(ctx, input)
+}
+
+func (f *Facade) ServiceLevel(ctx context.Context, input servicelevel.Input) (servicelevel.Output, error) {
+	return servicelevel.Analyze(ctx, input)
 }

@@ -7,11 +7,14 @@ import (
 	"github.com/Sales-Analysis/abc-helper-lib/abc"
 	"github.com/Sales-Analysis/abc-helper-lib/eoq"
 	"github.com/Sales-Analysis/abc-helper-lib/fsn"
+	"github.com/Sales-Analysis/abc-helper-lib/gmcontribution"
 	"github.com/Sales-Analysis/abc-helper-lib/hml"
 	"github.com/Sales-Analysis/abc-helper-lib/inventory"
+	"github.com/Sales-Analysis/abc-helper-lib/pareto"
 	"github.com/Sales-Analysis/abc-helper-lib/reorderpoint"
 	"github.com/Sales-Analysis/abc-helper-lib/safetystock"
 	"github.com/Sales-Analysis/abc-helper-lib/sde"
+	"github.com/Sales-Analysis/abc-helper-lib/servicelevel"
 	"github.com/Sales-Analysis/abc-helper-lib/ved"
 )
 
@@ -177,5 +180,66 @@ func TestFacadeSafetyStockDelegatesToAnalyzer(t *testing.T) {
 	}
 	if output.Results[0].SafetyStock != 33 {
 		t.Fatalf("expected safety stock 33, got %.4f", output.Results[0].SafetyStock)
+	}
+}
+
+func TestFacadeParetoDelegatesToAnalyzer(t *testing.T) {
+	facade := inventory.New()
+
+	output, err := facade.Pareto(context.Background(), pareto.Input{
+		Items: []pareto.Item{
+			{SKU: "A", Name: "Alpha", Value: 80},
+			{SKU: "B", Name: "Beta", Value: 20},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Pareto returned error: %v", err)
+	}
+
+	if len(output.Results) != 2 {
+		t.Fatalf("expected 2 results, got %d", len(output.Results))
+	}
+	if output.Results[0].SKU != "A" {
+		t.Fatalf("expected first SKU A, got %s", output.Results[0].SKU)
+	}
+}
+
+func TestFacadeGMContributionDelegatesToAnalyzer(t *testing.T) {
+	facade := inventory.New()
+
+	output, err := facade.GMContribution(context.Background(), gmcontribution.Input{
+		Items: []gmcontribution.Item{
+			{SKU: "A", Name: "Alpha", Revenue: 100, COGS: 60, VariableCost: 70, FixedCost: 10},
+		},
+	})
+	if err != nil {
+		t.Fatalf("GMContribution returned error: %v", err)
+	}
+
+	if len(output.Results) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(output.Results))
+	}
+	if output.Results[0].GrossMargin != 40 {
+		t.Fatalf("expected gross margin 40, got %.4f", output.Results[0].GrossMargin)
+	}
+}
+
+func TestFacadeServiceLevelDelegatesToAnalyzer(t *testing.T) {
+	facade := inventory.New()
+
+	output, err := facade.ServiceLevel(context.Background(), servicelevel.Input{
+		Items: []servicelevel.Item{
+			{SKU: "A", Name: "Alpha", DemandedUnits: 100, FulfilledUnits: 95, TotalCycles: 20, StockoutCycles: 2},
+		},
+	})
+	if err != nil {
+		t.Fatalf("ServiceLevel returned error: %v", err)
+	}
+
+	if len(output.Results) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(output.Results))
+	}
+	if output.Results[0].ServiceLevel != 90 {
+		t.Fatalf("expected service level 90, got %.4f", output.Results[0].ServiceLevel)
 	}
 }

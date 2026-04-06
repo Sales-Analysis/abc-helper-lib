@@ -16,7 +16,8 @@
 
 - тонкий корневой facade для orchestration;
 - доменное разделение на `inventory` и `customer`;
-- реализованные товарные анализы: `ABC`, `XYZ`, `ABC-XYZ`, `VED`, `FSN`, `HML`, `SDE`, `EOQ`, `Reorder Point`, `Safety Stock`.
+- реализованные товарные анализы: `ABC`, `XYZ`, `ABC-XYZ`, `VED`, `FSN`, `HML`, `SDE`, `EOQ`, `Reorder Point`, `Safety Stock`, `Pareto`, `GM/Contribution`, `Service Level`;
+- реализованные клиентские анализы: `RFM`, `CLV`, `Churn`.
 
 ### Установка
 
@@ -39,8 +40,14 @@ abc-helper-lib/
 ├── eoq/                # Расчет EOQ
 ├── reorderpoint/       # Расчет точки заказа
 ├── safetystock/        # Расчет страхового запаса
+├── pareto/             # Анализ Pareto 80/20
+├── gmcontribution/     # Анализ gross margin и contribution
+├── servicelevel/       # Анализ service level
 ├── inventory/          # Facade товарной аналитики
-├── customer/           # Каркас facade клиентской аналитики
+├── rfm/                # RFM-анализ
+├── clv/                # Анализ customer lifetime value
+├── churn/              # Анализ churn и retention
+├── customer/           # Facade клиентской аналитики
 ├── facade.go           # Корневой analytics facade
 ├── go.mod
 ├── README.md           # Общее описание проекта
