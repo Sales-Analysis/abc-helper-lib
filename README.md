@@ -19,6 +19,11 @@ The current foundation includes:
 - implemented inventory analyses: `ABC`, `XYZ`, `ABC-XYZ`, `VED`, `FSN`, `HML`, `SDE`, `EOQ`, `Reorder Point`, `Safety Stock`, `Pareto`, `GM/Contribution`, `Service Level`;
 - implemented customer analyses: `RFM`, `CLV`, `Churn`.
 
+### Compatibility
+
+- Go version: `1.23.4` (from `go.mod`)
+- Versioning: semantic version tags such as `v0.2.2`
+
 ### Installation
 
 ```bash
@@ -170,6 +175,31 @@ import (
 )
 ```
 
+### Analysis Status
+
+All analyses below are implemented in `v0.2.2`.
+
+| Analysis | Domain | Package | Facade Method | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| `ABC` | Inventory | `abc` | `Inventory().ABC` | Implemented |
+| `XYZ` | Inventory | `xyz` | `Inventory().XYZ` | Implemented |
+| `ABC-XYZ` | Inventory | `abcxyz` | `Inventory().ABCXYZ` | Implemented |
+| `VED` | Inventory | `ved` | `Inventory().VED` | Implemented |
+| `FSN` | Inventory | `fsn` | `Inventory().FSN` | Implemented |
+| `HML` | Inventory | `hml` | `Inventory().HML` | Implemented |
+| `SDE` | Inventory | `sde` | `Inventory().SDE` | Implemented |
+| `EOQ` | Inventory | `eoq` | `Inventory().EOQ` | Implemented |
+| `Reorder Point` | Inventory | `reorderpoint` | `Inventory().ReorderPoint` | Implemented |
+| `Safety Stock` | Inventory | `safetystock` | `Inventory().SafetyStock` | Implemented |
+| `Pareto 80/20` | Inventory | `pareto` | `Inventory().Pareto` | Implemented |
+| `GM/Contribution` | Inventory | `gmcontribution` | `Inventory().GMContribution` | Implemented |
+| `Service Level` | Inventory | `servicelevel` | `Inventory().ServiceLevel` | Implemented |
+| `RFM` | Customer | `rfm` | `Customer().RFM` | Implemented |
+| `CLV` | Customer | `clv` | `Customer().CLV` | Implemented |
+| `Churn/Retention` | Customer | `churn` | `Customer().Churn` | Implemented |
+
+Legacy note: `abc.New()` and `(*ABC).Calculate(...)` remain available for backward compatibility, but they are deprecated.
+
 ### Project Structure
 
 ```
@@ -199,7 +229,9 @@ abc-helper-lib/
 └── LICENSE
 ```
 
-### Documentation
+### Project Docs
 
-A detailed description of the abc package can be found in the file
-[**abc/README.md**](abc/README.md)
+- [**CHANGELOG.md**](CHANGELOG.md) for release history
+- [**CONTRIBUTING.md**](CONTRIBUTING.md) for development and release workflow
+- [**SECURITY.md**](SECURITY.md) for vulnerability reporting guidance
+- [**LICENSE**](LICENSE) for licensing terms

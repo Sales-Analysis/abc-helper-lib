@@ -19,6 +19,11 @@
 - реализованные товарные анализы: `ABC`, `XYZ`, `ABC-XYZ`, `VED`, `FSN`, `HML`, `SDE`, `EOQ`, `Reorder Point`, `Safety Stock`, `Pareto`, `GM/Contribution`, `Service Level`;
 - реализованные клиентские анализы: `RFM`, `CLV`, `Churn`.
 
+### Совместимость
+
+- Версия Go: `1.23.4` (из `go.mod`)
+- Версионирование: semver-теги вида `v0.2.2`
+
 ### Установка
 
 ```bash
@@ -170,6 +175,31 @@ import (
 )
 ```
 
+### Статус анализов
+
+Все анализы ниже реализованы в `v0.2.2`.
+
+| Анализ | Домен | Пакет | Facade-метод | Статус |
+| :--- | :--- | :--- | :--- | :--- |
+| `ABC` | Товарный | `abc` | `Inventory().ABC` | Реализован |
+| `XYZ` | Товарный | `xyz` | `Inventory().XYZ` | Реализован |
+| `ABC-XYZ` | Товарный | `abcxyz` | `Inventory().ABCXYZ` | Реализован |
+| `VED` | Товарный | `ved` | `Inventory().VED` | Реализован |
+| `FSN` | Товарный | `fsn` | `Inventory().FSN` | Реализован |
+| `HML` | Товарный | `hml` | `Inventory().HML` | Реализован |
+| `SDE` | Товарный | `sde` | `Inventory().SDE` | Реализован |
+| `EOQ` | Товарный | `eoq` | `Inventory().EOQ` | Реализован |
+| `Reorder Point` | Товарный | `reorderpoint` | `Inventory().ReorderPoint` | Реализован |
+| `Safety Stock` | Товарный | `safetystock` | `Inventory().SafetyStock` | Реализован |
+| `Pareto 80/20` | Товарный | `pareto` | `Inventory().Pareto` | Реализован |
+| `GM/Contribution` | Товарный | `gmcontribution` | `Inventory().GMContribution` | Реализован |
+| `Service Level` | Товарный | `servicelevel` | `Inventory().ServiceLevel` | Реализован |
+| `RFM` | Клиентский | `rfm` | `Customer().RFM` | Реализован |
+| `CLV` | Клиентский | `clv` | `Customer().CLV` | Реализован |
+| `Churn/Retention` | Клиентский | `churn` | `Customer().Churn` | Реализован |
+
+Legacy-заметка: `abc.New()` и `(*ABC).Calculate(...)` оставлены для обратной совместимости, но помечены как deprecated.
+
 ### Структура проекта
 
 ```
@@ -199,7 +229,9 @@ abc-helper-lib/
 └── LICENSE
 ```
 
-### Документация
+### Документы проекта
 
-Подробное описание пакета abc находится в файле
-[**abc/README.ru.md**](abc/README.ru.md)
+- [**CHANGELOG.md**](CHANGELOG.md) с историей релизов
+- [**CONTRIBUTING.md**](CONTRIBUTING.md) с процессом разработки и релизов
+- [**SECURITY.md**](SECURITY.md) с правилами сообщения об уязвимостях
+- [**LICENSE**](LICENSE) с условиями лицензии
