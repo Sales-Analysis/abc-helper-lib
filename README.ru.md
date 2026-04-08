@@ -231,6 +231,7 @@ abc-helper-lib/
 
 ### Документы проекта
 
+- [**docs/README.md**](docs/README.md) с детальной документацией по анализам на двух языках
 - [**CHANGELOG.md**](CHANGELOG.md) с историей релизов
 - [**CONTRIBUTING.md**](CONTRIBUTING.md) с процессом разработки и релизов
 - [**SECURITY.md**](SECURITY.md) с правилами сообщения об уязвимостях

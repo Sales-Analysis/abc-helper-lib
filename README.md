@@ -231,6 +231,7 @@ abc-helper-lib/
 
 ### Project Docs
 
+- [**docs/README.md**](docs/README.md) for detailed English and Russian analysis docs
 - [**CHANGELOG.md**](CHANGELOG.md) for release history
 - [**CONTRIBUTING.md**](CONTRIBUTING.md) for development and release workflow
 - [**SECURITY.md**](SECURITY.md) for vulnerability reporting guidance
