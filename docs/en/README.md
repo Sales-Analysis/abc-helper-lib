@@ -21,6 +21,31 @@ cust := svc.Customer()
 
 - [Inventory analyses](inventory.md)
 - [Customer analyses](customer.md)
+- [API conventions and technical notes](api.md)
+
+## Quick Navigation
+
+### Inventory
+
+- [ABC](inventory/abc.md)
+- [XYZ](inventory/xyz.md)
+- [ABC-XYZ](inventory/abcxyz.md)
+- [VED](inventory/ved.md)
+- [FSN](inventory/fsn.md)
+- [HML](inventory/hml.md)
+- [SDE](inventory/sde.md)
+- [EOQ](inventory/eoq.md)
+- [Reorder Point](inventory/reorderpoint.md)
+- [Safety Stock](inventory/safetystock.md)
+- [Pareto 80/20](inventory/pareto.md)
+- [GM/Contribution](inventory/gmcontribution.md)
+- [Service Level](inventory/servicelevel.md)
+
+### Customer
+
+- [RFM](customer/rfm.md)
+- [CLV](customer/clv.md)
+- [Churn / Retention](customer/churn.md)
 
 ## Package Conventions
 
