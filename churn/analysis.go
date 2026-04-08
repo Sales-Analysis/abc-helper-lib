@@ -4,6 +4,8 @@ import (
 	"context"
 	"sort"
 	"time"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const (
@@ -63,7 +65,10 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	if analysisTime.IsZero() {
 		analysisTime = time.Now().UTC()
 	}
-	thresholds := input.Thresholds.normalized()
+	thresholds, err := input.Thresholds.normalized()
+	if err != nil {
+		return Output{}, err
+	}
 
 	results := make([]CustomerResult, len(input.Customers))
 	summary := Summary{TotalCustomers: len(input.Customers)}
@@ -113,18 +118,23 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	}, nil
 }
 
-func (t Thresholds) normalized() Thresholds {
-	if t.AtRiskDays <= 0 {
+func (t Thresholds) normalized() (Thresholds, error) {
+	if t.AtRiskDays == 0 {
 		t.AtRiskDays = defaultAtRiskDays
 	}
-	if t.ChurnDays <= 0 {
+	if t.ChurnDays == 0 {
 		t.ChurnDays = defaultChurnDays
 	}
-	if t.ChurnDays <= t.AtRiskDays {
-		t.AtRiskDays = defaultAtRiskDays
-		t.ChurnDays = defaultChurnDays
+	if err := validation.RequirePositiveInt("thresholds.AtRiskDays", t.AtRiskDays); err != nil {
+		return Thresholds{}, err
 	}
-	return t
+	if err := validation.RequirePositiveInt("thresholds.ChurnDays", t.ChurnDays); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequireGreaterInt("thresholds.ChurnDays", t.ChurnDays, "thresholds.AtRiskDays", t.AtRiskDays); err != nil {
+		return Thresholds{}, err
+	}
+	return t, nil
 }
 
 func daysSince(analysisTime time.Time, lastOrderAt time.Time) int {

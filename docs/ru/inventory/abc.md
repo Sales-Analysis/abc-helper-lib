@@ -22,15 +22,19 @@ ABC классифицирует товары по вкладу в выручк�
 - `SKU`, `Name`
 - `Quantity`
 - `Price`
+- предпочтительное поле коллекции: `Items`
+- legacy-алиас коллекции: `Products`
 - опциональные пороги `AMaxShare`, `BMaxShare`
 
 ## Выход
 
+- `OriginalIndex`
 - `PriceTotal`
 - `ShareTotal`
 - `ShareAccumulated`
 - `Group` в `A/B/C`
 - `TotalRevenue`
+- `Summary` с общим числом товаров и counts по `A/B/C`
 
 ## Правила
 
@@ -44,7 +48,7 @@ ABC классифицирует товары по вкладу в выручк�
 
 ```go
 out, err := analytics.New().Inventory().ABC(ctx, abc.Input{
-    Products: []abc.Product{
+    Items: []abc.Item{
         {SKU: "A", Name: "Item A", Quantity: 10, Price: 100},
         {SKU: "B", Name: "Item B", Quantity: 5, Price: 50},
     },
@@ -59,6 +63,7 @@ out, err := analytics.New().Inventory().ABC(ctx, abc.Input{
 ## Частые ошибки
 
 - путать цену за единицу и общую выручку;
+- использовать legacy `Products` в новых интеграциях вместо предпочтительного `Items`;
 - ожидать, что порядок результата совпадет с порядком входа;
 - пытаться читать из ABC стабильность спроса.
 

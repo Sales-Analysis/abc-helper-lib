@@ -3,6 +3,8 @@ package fsn
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const (
@@ -22,6 +24,7 @@ type Input struct {
 
 type Output struct {
 	Results []ItemResult
+	Summary Summary
 }
 
 type Item struct {
@@ -43,6 +46,13 @@ type ItemResult struct {
 	Group              string
 }
 
+type Summary struct {
+	TotalItems int
+	FCount     int
+	SCount     int
+	NCount     int
+}
+
 func Analyze(ctx context.Context, input Input) (Output, error) {
 	if ctx != nil {
 		if err := ctx.Err(); err != nil {
@@ -50,8 +60,12 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
-	thresholds := input.Thresholds.normalized()
+	thresholds, err := input.Thresholds.normalized()
+	if err != nil {
+		return Output{}, err
+	}
 	results := make([]ItemResult, len(input.Items))
+	summary := Summary{TotalItems: len(input.Items)}
 	for i, item := range input.Items {
 		if ctx != nil {
 			if err := ctx.Err(); err != nil {
@@ -64,6 +78,7 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		activityRate := calculateActivityRate(activePeriods, periods)
 		averageMovement := calculateAverageMovement(total, periods)
 
+		group := classify(activityRate, activePeriods, thresholds)
 		results[i] = ItemResult{
 			OriginalIndex:      i,
 			SKU:                item.SKU,
@@ -74,7 +89,15 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 			TotalMovement:      total,
 			AverageMovement:    averageMovement,
 			LastMovementPeriod: lastMovementPeriod,
-			Group:              classify(activityRate, activePeriods, thresholds),
+			Group:              group,
+		}
+		switch group {
+		case "F":
+			summary.FCount++
+		case "S":
+			summary.SCount++
+		case "N":
+			summary.NCount++
 		}
 	}
 
@@ -88,21 +111,29 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		return results[i].ActivityRate > results[j].ActivityRate
 	})
 
-	return Output{Results: results}, nil
+	return Output{
+		Results: results,
+		Summary: summary,
+	}, nil
 }
 
-func (t Thresholds) normalized() Thresholds {
-	if t.FastMinActivityRate <= 0 || t.FastMinActivityRate > 100 {
+func (t Thresholds) normalized() (Thresholds, error) {
+	if t.FastMinActivityRate == 0 {
 		t.FastMinActivityRate = defaultFastMinActivityRate
 	}
-	if t.SlowMinActivityRate < 0 || t.SlowMinActivityRate > 100 {
+	if t.SlowMinActivityRate == 0 {
 		t.SlowMinActivityRate = defaultSlowMinActivityRate
 	}
-	if t.FastMinActivityRate <= t.SlowMinActivityRate {
-		t.FastMinActivityRate = defaultFastMinActivityRate
-		t.SlowMinActivityRate = defaultSlowMinActivityRate
+	if err := validation.RequirePercent("thresholds.FastMinActivityRate", t.FastMinActivityRate); err != nil {
+		return Thresholds{}, err
 	}
-	return t
+	if err := validation.RequirePercentAllowZero("thresholds.SlowMinActivityRate", t.SlowMinActivityRate); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequireGreaterFloat("thresholds.FastMinActivityRate", t.FastMinActivityRate, "thresholds.SlowMinActivityRate", t.SlowMinActivityRate); err != nil {
+		return Thresholds{}, err
+	}
+	return t, nil
 }
 
 func movementStats(movements []float64) (float64, int, int) {

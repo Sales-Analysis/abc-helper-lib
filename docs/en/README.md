@@ -19,9 +19,11 @@ cust := svc.Customer()
 
 ## Available Documentation
 
+- [Decision guide](decision-guide.md)
 - [Inventory analyses](inventory.md)
 - [Customer analyses](customer.md)
 - [API conventions and technical notes](api.md)
+- [v1 API review](v1-api-review.md)
 
 ## Quick Navigation
 
@@ -58,5 +60,5 @@ cust := svc.Customer()
 
 ## Versioning
 
-- The repository uses semantic version tags such as `v0.2.2`.
+- The repository uses semantic version tags such as `v0.3.0`.
 - Release history is recorded in the root `CHANGELOG.md`.

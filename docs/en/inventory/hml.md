@@ -26,6 +26,7 @@ HML classifies items by unit cost.
 
 - `UnitCost`
 - `Group` in `H/M/L`
+- `Summary` with total items and `H/M/L` counts
 
 ## Rules
 

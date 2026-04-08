@@ -26,6 +26,7 @@ SDE classifies items by procurement difficulty using lead time.
 
 - `LeadTimeDays`
 - `Group` in `S/D/E`
+- `Summary` with total items and `S/D/E` counts
 
 ## Rules
 

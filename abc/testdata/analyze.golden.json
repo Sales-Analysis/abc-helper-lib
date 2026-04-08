@@ -1,0 +1,35 @@
+{
+  "Results": [
+    {
+      "OriginalIndex": 0,
+      "SKU": "A",
+      "Name": "Alpha",
+      "Quantity": 10,
+      "PriceUnit": 10,
+      "PriceTotal": 100,
+      "ShareTotal": 80,
+      "ShareAccumulated": 80,
+      "Group": "A"
+    },
+    {
+      "OriginalIndex": 1,
+      "SKU": "B",
+      "Name": "Beta",
+      "Quantity": 5,
+      "PriceUnit": 5,
+      "PriceTotal": 25,
+      "ShareTotal": 20,
+      "ShareAccumulated": 100,
+      "Group": "C"
+    }
+  ],
+  "TotalRevenue": 125,
+  "Summary": {
+    "TotalItems": 2,
+    "TotalRevenue": 125,
+    "ACount": 1,
+    "BCount": 0,
+    "CCount": 1,
+    "SortedByValue": true
+  }
+}

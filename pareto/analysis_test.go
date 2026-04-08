@@ -3,6 +3,7 @@ package pareto_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/pareto"
@@ -61,5 +62,19 @@ func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
 	}
 	if !output.Summary.ParetoPrincipleMet {
 		t.Fatal("expected custom Pareto rule to be met")
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
+	_, err := pareto.Analyze(context.Background(), pareto.Input{
+		Thresholds: pareto.Thresholds{
+			TopValueShare: 120,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

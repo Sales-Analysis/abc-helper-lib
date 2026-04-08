@@ -2,6 +2,7 @@ package fsn_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/fsn"
@@ -34,6 +35,9 @@ func TestAnalyzeClassifiesItemsByMovementFrequency(t *testing.T) {
 	if output.Results[1].LastMovementPeriod != 2 {
 		t.Fatalf("expected second item last movement period 2, got %d", output.Results[1].LastMovementPeriod)
 	}
+	if output.Summary.TotalItems != 3 || output.Summary.FCount != 1 || output.Summary.SCount != 1 || output.Summary.NCount != 1 {
+		t.Fatalf("unexpected summary: %+v", output.Summary)
+	}
 }
 
 func TestAnalyzeSupportsCustomActivityThresholds(t *testing.T) {
@@ -60,5 +64,20 @@ func TestAnalyzeSupportsCustomActivityThresholds(t *testing.T) {
 	}
 	if output.Results[2].Group != "N" {
 		t.Fatalf("expected third item group N, got %s", output.Results[2].Group)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
+	_, err := fsn.Analyze(context.Background(), fsn.Input{
+		Thresholds: fsn.Thresholds{
+			FastMinActivityRate: 20,
+			SlowMinActivityRate: 25,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

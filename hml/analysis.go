@@ -3,6 +3,8 @@ package hml
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Thresholds struct {
@@ -17,6 +19,7 @@ type Input struct {
 
 type Output struct {
 	Results []ItemResult
+	Summary Summary
 }
 
 type Item struct {
@@ -33,6 +36,13 @@ type ItemResult struct {
 	Group         string
 }
 
+type Summary struct {
+	TotalItems int
+	HCount     int
+	MCount     int
+	LCount     int
+}
+
 func Analyze(ctx context.Context, input Input) (Output, error) {
 	if ctx != nil {
 		if err := ctx.Err(); err != nil {
@@ -40,8 +50,12 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
-	thresholds := normalizedThresholds(input.Items, input.Thresholds)
+	thresholds, err := normalizedThresholds(input.Items, input.Thresholds)
+	if err != nil {
+		return Output{}, err
+	}
 	results := make([]ItemResult, len(input.Items))
+	summary := Summary{TotalItems: len(input.Items)}
 	for i, item := range input.Items {
 		if ctx != nil {
 			if err := ctx.Err(); err != nil {
@@ -49,12 +63,21 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 			}
 		}
 
+		group := classify(item.UnitCost, thresholds)
 		results[i] = ItemResult{
 			OriginalIndex: i,
 			SKU:           item.SKU,
 			Name:          item.Name,
 			UnitCost:      item.UnitCost,
-			Group:         classify(item.UnitCost, thresholds),
+			Group:         group,
+		}
+		switch group {
+		case "H":
+			summary.HCount++
+		case "M":
+			summary.MCount++
+		case "L":
+			summary.LCount++
 		}
 	}
 
@@ -65,14 +88,26 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		return results[i].UnitCost > results[j].UnitCost
 	})
 
-	return Output{Results: results}, nil
+	return Output{
+		Results: results,
+		Summary: summary,
+	}, nil
 }
 
-func normalizedThresholds(items []Item, thresholds Thresholds) Thresholds {
-	if thresholds.HighMinUnitCost > thresholds.MediumMinUnitCost {
-		return thresholds
+func normalizedThresholds(items []Item, thresholds Thresholds) (Thresholds, error) {
+	if thresholds.HighMinUnitCost == 0 && thresholds.MediumMinUnitCost == 0 {
+		return deriveThresholds(items), nil
 	}
-	return deriveThresholds(items)
+	if err := validation.RequirePositiveFloat("thresholds.HighMinUnitCost", thresholds.HighMinUnitCost); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequirePositiveFloat("thresholds.MediumMinUnitCost", thresholds.MediumMinUnitCost); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequireGreaterFloat("thresholds.HighMinUnitCost", thresholds.HighMinUnitCost, "thresholds.MediumMinUnitCost", thresholds.MediumMinUnitCost); err != nil {
+		return Thresholds{}, err
+	}
+	return thresholds, nil
 }
 
 func deriveThresholds(items []Item) Thresholds {

@@ -26,6 +26,7 @@ HML классифицирует товары по unit cost.
 
 - `UnitCost`
 - `Group` в `H/M/L`
+- `Summary` с общим числом товаров и counts по `H/M/L`
 
 ## Правила
 

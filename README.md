@@ -22,7 +22,7 @@ The current foundation includes:
 ### Compatibility
 
 - Go version: `1.23.4` (from `go.mod`)
-- Versioning: semantic version tags such as `v0.2.2`
+- Versioning: semantic version tags such as `v0.3.0`
 
 ### Installation
 
@@ -46,7 +46,7 @@ Inventory analyses:
 
 ```go
 _, _ = inv.ABC(ctx, abc.Input{
-    Products: []abc.Product{
+    Items: []abc.Item{
         {SKU: "A", Name: "Item A", Quantity: 10, Price: 100},
     },
 })
@@ -177,7 +177,7 @@ import (
 
 ### Analysis Status
 
-All analyses below are implemented in `v0.2.2`.
+All analyses below are implemented in `v0.3.0`.
 
 | Analysis | Domain | Package | Facade Method | Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -232,6 +232,8 @@ abc-helper-lib/
 ### Project Docs
 
 - [**docs/README.md**](docs/README.md) for detailed English and Russian analysis docs
+- [**docs/en/decision-guide.md**](docs/en/decision-guide.md) for choosing the right analysis by business question
+- [**docs/en/v1-api-review.md**](docs/en/v1-api-review.md) for the current compatibility and stabilization review
 - [**CHANGELOG.md**](CHANGELOG.md) for release history
 - [**CONTRIBUTING.md**](CONTRIBUTING.md) for development and release workflow
 - [**SECURITY.md**](SECURITY.md) for vulnerability reporting guidance

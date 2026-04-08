@@ -18,6 +18,7 @@
 - [Pareto 80/20](inventory/pareto.md)
 - [GM/Contribution](inventory/gmcontribution.md)
 - [Service Level](inventory/servicelevel.md)
+- [Гид по выбору анализа](decision-guide.md)
 - [Соглашения API](api.md)
 
 ## Сводная таблица
@@ -40,6 +41,7 @@
 
 ## Связанные технические заметки
 
+- [Гид по выбору анализа](decision-guide.md)
 - [Соглашения API](api.md)
 - `ABC`, `XYZ` и `ABC-XYZ` связаны через `OriginalIndex`
 - `Safety Stock` и `Reorder Point` обычно читаются вместе как пара расчетов

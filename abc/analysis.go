@@ -3,6 +3,8 @@ package abc
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const (
@@ -21,6 +23,8 @@ type Thresholds struct {
 }
 
 type Input struct {
+	Items []Product
+	// Deprecated: use Items for new integrations.
 	Products   []Product
 	Thresholds Thresholds
 }
@@ -28,11 +32,13 @@ type Input struct {
 type Output struct {
 	Results      []ProductResult
 	TotalRevenue float64
+	Summary      Summary
 }
 
 type DetailedOutput struct {
 	Results      []IndexedProductResult
 	TotalRevenue float64
+	Summary      Summary
 }
 
 // Product is the input struct for the analysis.
@@ -43,7 +49,11 @@ type Product struct {
 	Price    float64
 }
 
+// Item is the preferred inventory-facing alias for Product.
+type Item = Product
+
 type ProductResult struct {
+	OriginalIndex    int
 	SKU              string
 	Name             string
 	Quantity         int
@@ -54,9 +64,21 @@ type ProductResult struct {
 	Group            string
 }
 
-type IndexedProductResult struct {
-	OriginalIndex int
-	ProductResult
+// ItemResult is the preferred inventory-facing alias for ProductResult.
+type ItemResult = ProductResult
+
+type IndexedProductResult = ProductResult
+
+// IndexedItemResult is the preferred inventory-facing alias for IndexedProductResult.
+type IndexedItemResult = IndexedProductResult
+
+type Summary struct {
+	TotalItems    int
+	TotalRevenue  float64
+	ACount        int
+	BCount        int
+	CCount        int
+	SortedByValue bool
 }
 
 type pair struct {
@@ -77,7 +99,7 @@ func New() *ABC {
 
 // Deprecated: use Analyze or AnalyzeDetailed instead of the stateful Calculate method.
 func (a *ABC) Calculate(products []Product) {
-	output, err := Analyze(context.Background(), Input{Products: products})
+	output, err := Analyze(context.Background(), Input{Items: products})
 	if err != nil {
 		a.Result = nil
 		return
@@ -93,13 +115,12 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	}
 
 	results := make([]ProductResult, len(detailed.Results))
-	for i, item := range detailed.Results {
-		results[i] = item.ProductResult
-	}
+	copy(results, detailed.Results)
 
 	return Output{
 		Results:      results,
 		TotalRevenue: detailed.TotalRevenue,
+		Summary:      detailed.Summary,
 	}, nil
 }
 
@@ -111,7 +132,12 @@ func AnalyzeDetailed(ctx context.Context, input Input) (DetailedOutput, error) {
 		}
 	}
 
-	products := append([]Product(nil), input.Products...)
+	thresholds, err := input.Thresholds.normalized()
+	if err != nil {
+		return DetailedOutput{}, err
+	}
+
+	products := input.normalizedItems()
 	analysis := New()
 
 	priceTotal := analysis.calculatePriceTotal(products)
@@ -119,35 +145,41 @@ func AnalyzeDetailed(ctx context.Context, input Input) (DetailedOutput, error) {
 	pairs := analysis.rankProductsByValue(priceTotal)
 	costPercentage := analysis.calculateCostPercentage(pairs, grandTotal)
 	accumulatedShare := analysis.calculateAccumulatedShare(costPercentage)
-	groups := assignGroupWithThresholds(accumulatedShare, input.Thresholds)
+	groups := assignGroupWithThresholds(accumulatedShare, thresholds)
 	results := analysis.buildResults(products, priceTotal, pairs, costPercentage, accumulatedShare, groups)
-
-	indexedResults := make([]IndexedProductResult, len(results))
-	for i, pair := range pairs {
-		indexedResults[i] = IndexedProductResult{
-			OriginalIndex: pair.index,
-			ProductResult: results[i],
-		}
-	}
+	summary := summarize(results, grandTotal)
 
 	return DetailedOutput{
-		Results:      indexedResults,
+		Results:      results,
 		TotalRevenue: grandTotal,
+		Summary:      summary,
 	}, nil
 }
 
-func (t Thresholds) normalized() Thresholds {
-	if t.AMaxShare <= 0 || t.AMaxShare >= 100 {
+func (in Input) normalizedItems() []Product {
+	if in.Items != nil {
+		return append([]Product(nil), in.Items...)
+	}
+	return append([]Product(nil), in.Products...)
+}
+
+func (t Thresholds) normalized() (Thresholds, error) {
+	if t.AMaxShare == 0 {
 		t.AMaxShare = defaultAMaxShare
 	}
-	if t.BMaxShare <= 0 || t.BMaxShare > 100 {
+	if t.BMaxShare == 0 {
 		t.BMaxShare = defaultBMaxShare
 	}
-	if t.BMaxShare <= t.AMaxShare {
-		t.AMaxShare = defaultAMaxShare
-		t.BMaxShare = defaultBMaxShare
+	if err := validation.RequirePercent("thresholds.AMaxShare", t.AMaxShare); err != nil {
+		return Thresholds{}, err
 	}
-	return t
+	if err := validation.RequirePercent("thresholds.BMaxShare", t.BMaxShare); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequireGreaterFloat("thresholds.BMaxShare", t.BMaxShare, "thresholds.AMaxShare", t.AMaxShare); err != nil {
+		return Thresholds{}, err
+	}
+	return t, nil
 }
 
 func (a *ABC) calculatePriceTotal(products []Product) []float64 {
@@ -186,11 +218,14 @@ func (a *ABC) calculateAccumulatedShare(costPercentage []float64) []float64 {
 }
 
 func (a *ABC) assignGroup(accumulatedShare []float64) []string {
-	return assignGroupWithThresholds(accumulatedShare, Thresholds{})
+	thresholds, err := (Thresholds{}).normalized()
+	if err != nil {
+		return nil
+	}
+	return assignGroupWithThresholds(accumulatedShare, thresholds)
 }
 
 func assignGroupWithThresholds(accumulatedShare []float64, thresholds Thresholds) []string {
-	thresholds = thresholds.normalized()
 	groups := make([]string, 0, len(accumulatedShare))
 	for _, value := range accumulatedShare {
 		if value <= thresholds.AMaxShare {
@@ -218,6 +253,7 @@ func (a *ABC) buildResults(
 		idx := pair.index
 
 		results[i] = ProductResult{
+			OriginalIndex:    idx,
 			SKU:              products[idx].SKU,
 			Name:             products[idx].Name,
 			Quantity:         products[idx].Quantity,
@@ -229,6 +265,25 @@ func (a *ABC) buildResults(
 		}
 	}
 	return results
+}
+
+func summarize(results []ProductResult, totalRevenue float64) Summary {
+	summary := Summary{
+		TotalItems:    len(results),
+		TotalRevenue:  totalRevenue,
+		SortedByValue: true,
+	}
+	for _, result := range results {
+		switch result.Group {
+		case "A":
+			summary.ACount++
+		case "B":
+			summary.BCount++
+		case "C":
+			summary.CCount++
+		}
+	}
+	return summary
 }
 
 func (a *ABC) rankProductsByValue(priceTotal []float64) byValue {

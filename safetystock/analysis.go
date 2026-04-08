@@ -4,6 +4,8 @@ import (
 	"context"
 	"math"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const defaultServiceFactor = 1.65
@@ -48,6 +50,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		serviceFactor := normalizedServiceFactor(item.ServiceFactor)
 		results[i] = ItemResult{
@@ -72,7 +77,7 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 }
 
 func normalizedServiceFactor(serviceFactor float64) float64 {
-	if serviceFactor <= 0 {
+	if serviceFactor == 0 {
 		return defaultServiceFactor
 	}
 	return serviceFactor
@@ -83,4 +88,17 @@ func calculateSafetyStock(demandStdDev float64, leadTimePeriods float64, service
 		return 0
 	}
 	return serviceFactor * demandStdDev * math.Sqrt(leadTimePeriods)
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].DemandStdDev", item.DemandStdDev); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].LeadTimePeriods", item.LeadTimePeriods); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].ServiceFactor", item.ServiceFactor); err != nil {
+		return err
+	}
+	return nil
 }

@@ -8,6 +8,7 @@ This page is the index for customer-focused analyses implemented in
 - [RFM](customer/rfm.md)
 - [CLV](customer/clv.md)
 - [Churn / Retention](customer/churn.md)
+- [Decision guide](decision-guide.md)
 - [API conventions](api.md)
 
 ## Summary Table
@@ -20,6 +21,7 @@ This page is the index for customer-focused analyses implemented in
 
 ## Related Technical Notes
 
+- [Decision guide](decision-guide.md)
 - [API conventions](api.md)
 - `RFM` is a segmentation model
 - `CLV` is a value estimation model

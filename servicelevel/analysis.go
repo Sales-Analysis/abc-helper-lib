@@ -3,6 +3,8 @@ package servicelevel
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Input struct {
@@ -50,6 +52,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 			if err := ctx.Err(); err != nil {
 				return Output{}, err
 			}
+		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
 		}
 
 		fillRate := safeUnitRate(item.FulfilledUnits, item.DemandedUnits)
@@ -113,4 +118,26 @@ func maxFloat(left float64, right float64) float64 {
 		return left
 	}
 	return right
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].DemandedUnits", item.DemandedUnits); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].FulfilledUnits", item.FulfilledUnits); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeInt("items[].TotalCycles", item.TotalCycles); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeInt("items[].StockoutCycles", item.StockoutCycles); err != nil {
+		return err
+	}
+	if item.TotalCycles > 0 && item.StockoutCycles > item.TotalCycles {
+		return validation.Invalidf("items[].StockoutCycles must be less than or equal to items[].TotalCycles")
+	}
+	if item.DemandedUnits > 0 && item.FulfilledUnits > item.DemandedUnits {
+		return validation.Invalidf("items[].FulfilledUnits must be less than or equal to items[].DemandedUnits")
+	}
+	return nil
 }

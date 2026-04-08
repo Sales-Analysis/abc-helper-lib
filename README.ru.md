@@ -22,7 +22,7 @@
 ### Совместимость
 
 - Версия Go: `1.23.4` (из `go.mod`)
-- Версионирование: semver-теги вида `v0.2.2`
+- Версионирование: semver-теги вида `v0.3.0`
 
 ### Установка
 
@@ -46,7 +46,7 @@ cust := svc.Customer()
 
 ```go
 _, _ = inv.ABC(ctx, abc.Input{
-    Products: []abc.Product{
+    Items: []abc.Item{
         {SKU: "A", Name: "Item A", Quantity: 10, Price: 100},
     },
 })
@@ -177,7 +177,7 @@ import (
 
 ### Статус анализов
 
-Все анализы ниже реализованы в `v0.2.2`.
+Все анализы ниже реализованы в `v0.3.0`.
 
 | Анализ | Домен | Пакет | Facade-метод | Статус |
 | :--- | :--- | :--- | :--- | :--- |
@@ -232,6 +232,8 @@ abc-helper-lib/
 ### Документы проекта
 
 - [**docs/README.md**](docs/README.md) с детальной документацией по анализам на двух языках
+- [**docs/ru/decision-guide.md**](docs/ru/decision-guide.md) с гидом по выбору анализа под бизнес-вопрос
+- [**docs/ru/v1-api-review.md**](docs/ru/v1-api-review.md) с текущим обзором совместимости и стабилизации API
 - [**CHANGELOG.md**](CHANGELOG.md) с историей релизов
 - [**CONTRIBUTING.md**](CONTRIBUTING.md) с процессом разработки и релизов
 - [**SECURITY.md**](SECURITY.md) с правилами сообщения об уязвимостях

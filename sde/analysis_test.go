@@ -2,6 +2,7 @@ package sde_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/sde"
@@ -31,6 +32,9 @@ func TestAnalyzeDerivesThresholdsFromData(t *testing.T) {
 	if output.Results[2].Group != "E" {
 		t.Fatalf("expected third item group E, got %s", output.Results[2].Group)
 	}
+	if output.Summary.TotalItems != 3 || output.Summary.SCount != 1 || output.Summary.DCount != 1 || output.Summary.ECount != 1 {
+		t.Fatalf("unexpected summary: %+v", output.Summary)
+	}
 }
 
 func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
@@ -57,5 +61,19 @@ func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
 	}
 	if output.Results[2].Group != "E" {
 		t.Fatalf("expected third item group E, got %s", output.Results[2].Group)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnIncompleteThresholdOverride(t *testing.T) {
+	_, err := sde.Analyze(context.Background(), sde.Input{
+		Thresholds: sde.Thresholds{
+			ScarceMinLeadTime: 90,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

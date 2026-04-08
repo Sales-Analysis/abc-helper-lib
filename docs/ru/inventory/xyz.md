@@ -25,11 +25,13 @@ XYZ классифицирует товары по вариативности с
 
 ## Выход
 
+- `OriginalIndex`
 - `Periods`
 - `AverageDemand`
 - `StandardDeviation`
 - `CoefficientOfVariation`
 - `Group` в `X/Y/Z`
+- `Summary` с общим числом товаров и counts по `X/Y/Z`
 
 ## Правила
 

@@ -31,6 +31,7 @@ FSN classifies items by movement frequency across periods.
 - `AverageMovement`
 - `LastMovementPeriod`
 - `Group` in `F/S/N`
+- `Summary` with total items and `F/S/N` counts
 
 ## Rules
 

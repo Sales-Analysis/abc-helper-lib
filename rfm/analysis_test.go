@@ -2,6 +2,7 @@ package rfm_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -58,5 +59,19 @@ func TestAnalyzeTreatsMissingLastOrderAsVeryStale(t *testing.T) {
 
 	if output.Results[1].CustomerID != "A" {
 		t.Fatalf("expected stale customer A to rank lower, got %s", output.Results[1].CustomerID)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnNegativeOrders(t *testing.T) {
+	_, err := rfm.Analyze(context.Background(), rfm.Input{
+		Customers: []rfm.Customer{
+			{CustomerID: "A", Name: "Alpha", Orders: -1},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"math"
 	"sort"
 	"time"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const missingLastOrderRecencyDays = 365000
@@ -60,6 +62,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateCustomer(customer); err != nil {
+			return Output{}, err
+		}
 
 		results[i] = CustomerResult{
 			OriginalIndex: i,
@@ -94,6 +99,13 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	})
 
 	return Output{Results: results}, nil
+}
+
+func validateCustomer(customer Customer) error {
+	if err := validation.RequireNonNegativeInt("customers[].Orders", customer.Orders); err != nil {
+		return err
+	}
+	return nil
 }
 
 func daysSinceLastOrder(analysisTime time.Time, lastOrderAt time.Time) int {

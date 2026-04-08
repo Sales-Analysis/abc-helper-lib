@@ -3,6 +3,7 @@ package churn_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -67,5 +68,20 @@ func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
 	}
 	if output.Results[1].Status != "AtRisk" {
 		t.Fatalf("expected second customer status AtRisk, got %s", output.Results[1].Status)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
+	_, err := churn.Analyze(context.Background(), churn.Input{
+		Thresholds: churn.Thresholds{
+			AtRiskDays: 45,
+			ChurnDays:  30,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

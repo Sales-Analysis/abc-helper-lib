@@ -3,6 +3,8 @@ package xyz
 import (
 	"context"
 	"math"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const (
@@ -22,6 +24,7 @@ type Input struct {
 
 type Output struct {
 	Results []ItemResult
+	Summary Summary
 }
 
 type Item struct {
@@ -41,6 +44,13 @@ type ItemResult struct {
 	Group                  string
 }
 
+type Summary struct {
+	TotalItems int
+	XCount     int
+	YCount     int
+	ZCount     int
+}
+
 func Analyze(ctx context.Context, input Input) (Output, error) {
 	if ctx != nil {
 		if err := ctx.Err(); err != nil {
@@ -48,8 +58,12 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
-	thresholds := input.Thresholds.normalized()
+	thresholds, err := input.Thresholds.normalized()
+	if err != nil {
+		return Output{}, err
+	}
 	results := make([]ItemResult, len(input.Items))
+	summary := Summary{TotalItems: len(input.Items)}
 
 	for i, item := range input.Items {
 		if ctx != nil {
@@ -61,6 +75,7 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		mean, stddev := demandStats(item.Demands)
 		cv := coefficientOfVariation(mean, stddev)
 
+		group := classify(cv, mean, len(item.Demands), thresholds)
 		results[i] = ItemResult{
 			OriginalIndex:          i,
 			SKU:                    item.SKU,
@@ -69,25 +84,41 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 			AverageDemand:          mean,
 			StandardDeviation:      stddev,
 			CoefficientOfVariation: cv,
-			Group:                  classify(cv, mean, len(item.Demands), thresholds),
+			Group:                  group,
+		}
+		switch group {
+		case "X":
+			summary.XCount++
+		case "Y":
+			summary.YCount++
+		case "Z":
+			summary.ZCount++
 		}
 	}
 
-	return Output{Results: results}, nil
+	return Output{
+		Results: results,
+		Summary: summary,
+	}, nil
 }
 
-func (t Thresholds) normalized() Thresholds {
-	if t.XMaxCV <= 0 {
+func (t Thresholds) normalized() (Thresholds, error) {
+	if t.XMaxCV == 0 {
 		t.XMaxCV = defaultXMaxCV
 	}
-	if t.YMaxCV <= 0 {
+	if t.YMaxCV == 0 {
 		t.YMaxCV = defaultYMaxCV
 	}
-	if t.YMaxCV <= t.XMaxCV {
-		t.XMaxCV = defaultXMaxCV
-		t.YMaxCV = defaultYMaxCV
+	if err := validation.RequirePositiveFloat("thresholds.XMaxCV", t.XMaxCV); err != nil {
+		return Thresholds{}, err
 	}
-	return t
+	if err := validation.RequirePositiveFloat("thresholds.YMaxCV", t.YMaxCV); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequireGreaterFloat("thresholds.YMaxCV", t.YMaxCV, "thresholds.XMaxCV", t.XMaxCV); err != nil {
+		return Thresholds{}, err
+	}
+	return t, nil
 }
 
 func demandStats(demands []float64) (float64, float64) {

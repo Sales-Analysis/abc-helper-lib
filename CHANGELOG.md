@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-04-08
+
+### Added
+
+- Added preferred inventory-style `abc.Input.Items` input support while keeping `abc.Input.Products` as a legacy alias.
+- Added `Summary` outputs for `ABC`, `XYZ`, `VED`, `FSN`, `HML`, `SDE`, and `ABC-XYZ`.
+- Added `OriginalIndex` to the main `ABC` output so composite and direct consumers share the same indexing behavior.
+- Added bilingual analysis selection guides in `docs/en/decision-guide.md` and `docs/ru/decision-guide.md`.
+- Added bilingual `v1` API review and compatibility notes in `docs/en/v1-api-review.md` and `docs/ru/v1-api-review.md`.
+- Added golden test infrastructure and golden fixtures for `ABC`, `XYZ`, `Pareto`, and `EOQ`.
+- Added benchmark coverage for `ABC`, `XYZ`, `Pareto`, and `RFM`.
+- Added fuzz tests for `EOQ`, `Reorder Point`, `Safety Stock`, and `Service Level`.
+- Added property-based tests for `EOQ`, `Reorder Point`, `Safety Stock`, and `Service Level`.
+
+### Changed
+
+- Unified validation and error handling rules across threshold-based and bounded-input analyzers.
+- Unified input and output conventions around `Items`, `Customers`, `Results`, `OriginalIndex`, and dataset-level `Summary` values.
+- Expanded executable examples in `example_test.go` for key inventory and customer analyses.
+- Shared float validation now rejects non-finite values such as `NaN` and `Inf`.
+
+### Documentation
+
+- Updated root README files and API docs to reflect the new input/output conventions and release documentation set.
+- Linked the new decision guide and `v1` API review from the root documentation index and language-specific docs.
+
+### Testing
+
+- Added invalid-config and item-level validation coverage across updated analyzers.
+- Established golden, benchmark, fuzz, and property-based test coverage as the new baseline quality layer.
+
 ## [v0.2.2] - 2026-04-06
 
 ### Documentation
@@ -53,7 +84,8 @@ All notable changes to this project will be documented in this file.
 - Added result building, structure refactoring, and initial tests.
 - Added the first README and changelog documentation.
 
-[Unreleased]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.2...v0.3.0
 [v0.2.2]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.1.0...v0.2.0

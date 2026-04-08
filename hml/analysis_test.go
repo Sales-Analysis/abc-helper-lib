@@ -2,6 +2,7 @@ package hml_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/hml"
@@ -31,6 +32,9 @@ func TestAnalyzeDerivesThresholdsFromData(t *testing.T) {
 	if output.Results[2].Group != "L" {
 		t.Fatalf("expected third item group L, got %s", output.Results[2].Group)
 	}
+	if output.Summary.TotalItems != 3 || output.Summary.HCount != 1 || output.Summary.MCount != 1 || output.Summary.LCount != 1 {
+		t.Fatalf("unexpected summary: %+v", output.Summary)
+	}
 }
 
 func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
@@ -57,5 +61,19 @@ func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
 	}
 	if output.Results[2].Group != "L" {
 		t.Fatalf("expected third item group L, got %s", output.Results[2].Group)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnIncompleteThresholdOverride(t *testing.T) {
+	_, err := hml.Analyze(context.Background(), hml.Input{
+		Thresholds: hml.Thresholds{
+			HighMinUnitCost: 200,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

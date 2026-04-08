@@ -3,6 +3,7 @@ package clv_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/clv"
@@ -64,5 +65,26 @@ func TestAnalyzeNormalizesPercentInputs(t *testing.T) {
 	}
 	if math.Abs(output.Results[0].RetentionRate-0.8) > 0.001 {
 		t.Fatalf("expected normalized retention rate 0.8, got %.4f", output.Results[0].RetentionRate)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidRates(t *testing.T) {
+	_, err := clv.Analyze(context.Background(), clv.Input{
+		Customers: []clv.Customer{
+			{
+				CustomerID:      "A",
+				Name:            "Alpha",
+				Revenue:         1000,
+				Orders:          10,
+				PeriodsObserved: 5,
+				GrossMarginRate: 120,
+			},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

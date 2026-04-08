@@ -3,6 +3,7 @@ package xyz_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/xyz"
@@ -33,8 +34,26 @@ func TestAnalyzeClassifiesItemsByDemandVariability(t *testing.T) {
 	if output.Results[2].Group != "Z" {
 		t.Fatalf("expected third item to be Z, got %s", output.Results[2].Group)
 	}
+	if output.Summary.TotalItems != 3 || output.Summary.XCount != 1 || output.Summary.YCount != 1 || output.Summary.ZCount != 1 {
+		t.Fatalf("unexpected summary: %+v", output.Summary)
+	}
 
 	if math.Abs(output.Results[1].CoefficientOfVariation-16.3299) > 0.01 {
 		t.Fatalf("expected CV around 16.33, got %.4f", output.Results[1].CoefficientOfVariation)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
+	_, err := xyz.Analyze(context.Background(), xyz.Input{
+		Thresholds: xyz.Thresholds{
+			XMaxCV: 30,
+			YMaxCV: 20,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

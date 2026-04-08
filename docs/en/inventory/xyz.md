@@ -25,11 +25,13 @@ XYZ classifies items by demand variability using the coefficient of variation.
 
 ## Output
 
+- `OriginalIndex`
 - `Periods`
 - `AverageDemand`
 - `StandardDeviation`
 - `CoefficientOfVariation`
 - `Group` in `X/Y/Z`
+- `Summary` with total items and `X/Y/Z` counts
 
 ## Rules
 

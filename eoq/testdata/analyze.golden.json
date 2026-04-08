@@ -1,0 +1,14 @@
+{
+  "Results": [
+    {
+      "OriginalIndex": 0,
+      "SKU": "A",
+      "Name": "Alpha",
+      "AnnualDemand": 1200,
+      "OrderingCost": 50,
+      "HoldingCost": 2,
+      "OptimalQuantity": 244.949,
+      "OrdersPerYear": 4.899
+    }
+  ]
+}

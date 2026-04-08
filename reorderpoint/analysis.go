@@ -3,6 +3,8 @@ package reorderpoint
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Input struct {
@@ -46,6 +48,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		leadTimeDemand := calculateLeadTimeDemand(item.AverageDemandPerPeriod, item.LeadTimePeriods)
 		results[i] = ItemResult{
@@ -68,6 +73,19 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	})
 
 	return Output{Results: results}, nil
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].AverageDemandPerPeriod", item.AverageDemandPerPeriod); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].LeadTimePeriods", item.LeadTimePeriods); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].SafetyStock", item.SafetyStock); err != nil {
+		return err
+	}
+	return nil
 }
 
 func calculateLeadTimeDemand(averageDemandPerPeriod float64, leadTimePeriods float64) float64 {

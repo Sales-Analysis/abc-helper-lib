@@ -1,0 +1,40 @@
+{
+  "Results": [
+    {
+      "OriginalIndex": 0,
+      "SKU": "X",
+      "Name": "Stable",
+      "Periods": 3,
+      "AverageDemand": 10,
+      "StandardDeviation": 0,
+      "CoefficientOfVariation": 0,
+      "Group": "X"
+    },
+    {
+      "OriginalIndex": 1,
+      "SKU": "Y",
+      "Name": "Moderate",
+      "Periods": 3,
+      "AverageDemand": 10,
+      "StandardDeviation": 1.633,
+      "CoefficientOfVariation": 16.3299,
+      "Group": "Y"
+    },
+    {
+      "OriginalIndex": 2,
+      "SKU": "Z",
+      "Name": "Erratic",
+      "Periods": 3,
+      "AverageDemand": 6.6667,
+      "StandardDeviation": 9.4281,
+      "CoefficientOfVariation": 141.4214,
+      "Group": "Z"
+    }
+  ],
+  "Summary": {
+    "TotalItems": 3,
+    "XCount": 1,
+    "YCount": 1,
+    "ZCount": 1
+  }
+}

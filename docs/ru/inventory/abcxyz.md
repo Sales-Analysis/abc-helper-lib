@@ -29,6 +29,7 @@ ABC-XYZ объединяет важность по выручке и стаби�
 - основные поля из `ABC`
 - основные поля из `XYZ`
 - `CombinedGroup`, например `AX`, `BY`, `CZ`
+- `Summary` с агрегированными counts по `ABC`, `XYZ` и combined groups
 
 ## Правила
 

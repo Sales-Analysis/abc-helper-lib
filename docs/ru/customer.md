@@ -7,6 +7,7 @@
 - [RFM](customer/rfm.md)
 - [CLV](customer/clv.md)
 - [Churn / Retention](customer/churn.md)
+- [Гид по выбору анализа](decision-guide.md)
 - [Соглашения API](api.md)
 
 ## Сводная таблица
@@ -19,6 +20,7 @@
 
 ## Связанные технические заметки
 
+- [Гид по выбору анализа](decision-guide.md)
 - [Соглашения API](api.md)
 - `RFM` решает задачу сегментации
 - `CLV` решает задачу оценки ценности

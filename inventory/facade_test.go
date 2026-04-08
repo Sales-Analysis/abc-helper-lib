@@ -22,7 +22,7 @@ func TestFacadeABCDelegatesToAnalyzer(t *testing.T) {
 	facade := inventory.New()
 
 	output, err := facade.ABC(context.Background(), abc.Input{
-		Products: []abc.Product{
+		Items: []abc.Item{
 			{SKU: "A", Name: "Alpha", Quantity: 10, Price: 10},
 			{SKU: "B", Name: "Beta", Quantity: 1, Price: 5},
 		},

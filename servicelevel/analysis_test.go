@@ -3,6 +3,7 @@ package servicelevel_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/servicelevel"
@@ -42,5 +43,19 @@ func TestAnalyzeFallsBackToFillRateWhenCyclesMissing(t *testing.T) {
 
 	if math.Abs(output.Results[0].ServiceLevel-90) > 0.001 {
 		t.Fatalf("expected service level 90, got %.4f", output.Results[0].ServiceLevel)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnImpossibleCycleInputs(t *testing.T) {
+	_, err := servicelevel.Analyze(context.Background(), servicelevel.Input{
+		Items: []servicelevel.Item{
+			{SKU: "A", Name: "Alpha", DemandedUnits: 100, FulfilledUnits: 95, TotalCycles: 2, StockoutCycles: 3},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

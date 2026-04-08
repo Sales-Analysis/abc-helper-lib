@@ -4,6 +4,8 @@ import (
 	"context"
 	"math"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 const (
@@ -61,7 +63,10 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
-	thresholds := input.Thresholds.normalized()
+	thresholds, err := input.Thresholds.normalized()
+	if err != nil {
+		return Output{}, err
+	}
 	type indexedItem struct {
 		Item
 		OriginalIndex int
@@ -132,14 +137,20 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	}, nil
 }
 
-func (t Thresholds) normalized() Thresholds {
-	if t.TopValueShare <= 0 || t.TopValueShare > 100 {
+func (t Thresholds) normalized() (Thresholds, error) {
+	if t.TopValueShare == 0 {
 		t.TopValueShare = defaultTopValueShare
 	}
-	if t.TopItemShare <= 0 || t.TopItemShare > 100 {
+	if t.TopItemShare == 0 {
 		t.TopItemShare = defaultTopItemShare
 	}
-	return t
+	if err := validation.RequirePercent("thresholds.TopValueShare", t.TopValueShare); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequirePercent("thresholds.TopItemShare", t.TopItemShare); err != nil {
+		return Thresholds{}, err
+	}
+	return t, nil
 }
 
 func safeShare(value float64, total float64) float64 {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"math"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Input struct {
@@ -47,6 +49,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		optimalQuantity := calculateEOQ(item.AnnualDemand, item.OrderingCost, item.HoldingCost)
 		results[i] = ItemResult{
@@ -69,6 +74,19 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	})
 
 	return Output{Results: results}, nil
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].AnnualDemand", item.AnnualDemand); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].OrderingCost", item.OrderingCost); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].HoldingCost", item.HoldingCost); err != nil {
+		return err
+	}
+	return nil
 }
 
 func calculateEOQ(annualDemand float64, orderingCost float64, holdingCost float64) float64 {

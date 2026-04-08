@@ -1,0 +1,46 @@
+{
+  "Results": [
+    {
+      "OriginalIndex": 0,
+      "SKU": "A",
+      "Name": "Alpha",
+      "Value": 80,
+      "ValueShare": 80,
+      "CumulativeValueShare": 80,
+      "CumulativeItemShare": 33.3333,
+      "InTopValueSet": true,
+      "InTopItemSet": true
+    },
+    {
+      "OriginalIndex": 1,
+      "SKU": "B",
+      "Name": "Beta",
+      "Value": 15,
+      "ValueShare": 15,
+      "CumulativeValueShare": 95,
+      "CumulativeItemShare": 66.6667,
+      "InTopValueSet": false,
+      "InTopItemSet": false
+    },
+    {
+      "OriginalIndex": 2,
+      "SKU": "C",
+      "Name": "Gamma",
+      "Value": 5,
+      "ValueShare": 5,
+      "CumulativeValueShare": 100,
+      "CumulativeItemShare": 100,
+      "InTopValueSet": false,
+      "InTopItemSet": false
+    }
+  ],
+  "Summary": {
+    "TotalItems": 3,
+    "TotalValue": 100,
+    "TopItemCount": 1,
+    "TopItemShare": 20,
+    "TopItemValueShare": 80,
+    "TopValueShareTarget": 80,
+    "ParetoPrincipleMet": true
+  }
+}

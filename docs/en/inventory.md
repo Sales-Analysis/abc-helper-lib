@@ -18,6 +18,7 @@ This page is the index for inventory-focused analyses implemented in
 - [Pareto 80/20](inventory/pareto.md)
 - [GM/Contribution](inventory/gmcontribution.md)
 - [Service Level](inventory/servicelevel.md)
+- [Decision guide](decision-guide.md)
 - [API conventions](api.md)
 
 ## Summary Table
@@ -40,6 +41,7 @@ This page is the index for inventory-focused analyses implemented in
 
 ## Related Technical Notes
 
+- [Decision guide](decision-guide.md)
 - [API conventions](api.md)
 - `ABC`, `XYZ`, and `ABC-XYZ` share input alignment through `OriginalIndex`
 - `Safety Stock` and `Reorder Point` are operationally related and are usually

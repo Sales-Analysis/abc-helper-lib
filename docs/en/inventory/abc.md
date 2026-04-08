@@ -23,15 +23,19 @@ value.
 - `SKU`, `Name`
 - `Quantity`
 - `Price`
+- preferred collection field: `Items`
+- legacy collection alias: `Products`
 - optional thresholds `AMaxShare`, `BMaxShare`
 
 ## Output
 
+- `OriginalIndex`
 - `PriceTotal`
 - `ShareTotal`
 - `ShareAccumulated`
 - `Group` in `A/B/C`
 - `TotalRevenue`
+- `Summary` with total items and `A/B/C` counts
 
 ## Rules
 
@@ -45,7 +49,7 @@ value.
 
 ```go
 out, err := analytics.New().Inventory().ABC(ctx, abc.Input{
-    Products: []abc.Product{
+    Items: []abc.Item{
         {SKU: "A", Name: "Item A", Quantity: 10, Price: 100},
         {SKU: "B", Name: "Item B", Quantity: 5, Price: 50},
     },
@@ -60,6 +64,7 @@ out, err := analytics.New().Inventory().ABC(ctx, abc.Input{
 ## Common Mistakes
 
 - mixing unit price and total revenue in the input;
+- using legacy `Products` in new integrations instead of the preferred `Items`;
 - expecting the output order to match the input order;
 - using ABC to infer demand stability.
 

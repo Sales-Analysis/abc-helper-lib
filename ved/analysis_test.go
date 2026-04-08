@@ -2,6 +2,7 @@ package ved_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/ved"
@@ -31,6 +32,9 @@ func TestAnalyzeClassifiesItemsByCriticality(t *testing.T) {
 	if output.Results[2].Group != "D" {
 		t.Fatalf("expected third item group D, got %s", output.Results[2].Group)
 	}
+	if output.Summary.TotalItems != 3 || output.Summary.VCount != 1 || output.Summary.ECount != 1 || output.Summary.DCount != 1 {
+		t.Fatalf("unexpected summary: %+v", output.Summary)
+	}
 }
 
 func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
@@ -57,5 +61,20 @@ func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
 	}
 	if output.Results[2].Group != "D" {
 		t.Fatalf("expected third item group D, got %s", output.Results[2].Group)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
+	_, err := ved.Analyze(context.Background(), ved.Input{
+		Thresholds: ved.Thresholds{
+			VitalMinScore:     40,
+			EssentialMinScore: 60,
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid thresholds error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

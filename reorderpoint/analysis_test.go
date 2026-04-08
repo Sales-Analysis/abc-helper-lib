@@ -3,6 +3,7 @@ package reorderpoint_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/reorderpoint"
@@ -45,5 +46,19 @@ func TestAnalyzeReturnsZeroLeadTimeDemandForInvalidInputs(t *testing.T) {
 	}
 	if output.Results[0].ReorderPoint != 5 {
 		t.Fatalf("expected reorder point 5, got %.4f", output.Results[0].ReorderPoint)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnNegativeInputs(t *testing.T) {
+	_, err := reorderpoint.Analyze(context.Background(), reorderpoint.Input{
+		Items: []reorderpoint.Item{
+			{SKU: "A", Name: "Alpha", AverageDemandPerPeriod: 20, LeadTimePeriods: -1, SafetyStock: 5},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

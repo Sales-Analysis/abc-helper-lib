@@ -3,6 +3,8 @@ package sde
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Thresholds struct {
@@ -17,6 +19,7 @@ type Input struct {
 
 type Output struct {
 	Results []ItemResult
+	Summary Summary
 }
 
 type Item struct {
@@ -33,6 +36,13 @@ type ItemResult struct {
 	Group         string
 }
 
+type Summary struct {
+	TotalItems int
+	SCount     int
+	DCount     int
+	ECount     int
+}
+
 func Analyze(ctx context.Context, input Input) (Output, error) {
 	if ctx != nil {
 		if err := ctx.Err(); err != nil {
@@ -40,8 +50,12 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
-	thresholds := normalizedThresholds(input.Items, input.Thresholds)
+	thresholds, err := normalizedThresholds(input.Items, input.Thresholds)
+	if err != nil {
+		return Output{}, err
+	}
 	results := make([]ItemResult, len(input.Items))
+	summary := Summary{TotalItems: len(input.Items)}
 	for i, item := range input.Items {
 		if ctx != nil {
 			if err := ctx.Err(); err != nil {
@@ -49,12 +63,21 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 			}
 		}
 
+		group := classify(item.LeadTimeDays, thresholds)
 		results[i] = ItemResult{
 			OriginalIndex: i,
 			SKU:           item.SKU,
 			Name:          item.Name,
 			LeadTimeDays:  item.LeadTimeDays,
-			Group:         classify(item.LeadTimeDays, thresholds),
+			Group:         group,
+		}
+		switch group {
+		case "S":
+			summary.SCount++
+		case "D":
+			summary.DCount++
+		case "E":
+			summary.ECount++
 		}
 	}
 
@@ -65,14 +88,26 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		return results[i].LeadTimeDays > results[j].LeadTimeDays
 	})
 
-	return Output{Results: results}, nil
+	return Output{
+		Results: results,
+		Summary: summary,
+	}, nil
 }
 
-func normalizedThresholds(items []Item, thresholds Thresholds) Thresholds {
-	if thresholds.ScarceMinLeadTime > thresholds.DifficultMinLeadTime {
-		return thresholds
+func normalizedThresholds(items []Item, thresholds Thresholds) (Thresholds, error) {
+	if thresholds.ScarceMinLeadTime == 0 && thresholds.DifficultMinLeadTime == 0 {
+		return deriveThresholds(items), nil
 	}
-	return deriveThresholds(items)
+	if err := validation.RequirePositiveInt("thresholds.ScarceMinLeadTime", thresholds.ScarceMinLeadTime); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequirePositiveInt("thresholds.DifficultMinLeadTime", thresholds.DifficultMinLeadTime); err != nil {
+		return Thresholds{}, err
+	}
+	if err := validation.RequireGreaterInt("thresholds.ScarceMinLeadTime", thresholds.ScarceMinLeadTime, "thresholds.DifficultMinLeadTime", thresholds.DifficultMinLeadTime); err != nil {
+		return Thresholds{}, err
+	}
+	return thresholds, nil
 }
 
 func deriveThresholds(items []Item) Thresholds {

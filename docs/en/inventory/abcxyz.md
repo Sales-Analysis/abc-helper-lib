@@ -29,6 +29,7 @@ classification such as `AX` or `CZ`.
 - all main `ABC` outputs
 - all main `XYZ` outputs
 - `CombinedGroup` such as `AX`, `BY`, or `CZ`
+- `Summary` with aggregate counts for `ABC`, `XYZ`, and combined groups
 
 ## Rules
 

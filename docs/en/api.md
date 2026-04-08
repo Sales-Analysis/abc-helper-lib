@@ -13,6 +13,10 @@ This page documents implementation-wide rules that apply across packages.
 
 - Each analysis accepts a dedicated `Input` struct.
 - Each analysis returns a dedicated `Output` struct and `error`.
+- Inventory analyses use `Items` as the preferred collection field in `Input`.
+- Customer analyses use `Customers` as the collection field in `Input`.
+- `Results` is the standard top-level collection field in `Output`.
+- `abc.Input.Products` remains supported as a legacy alias, but new code should use `abc.Input.Items`.
 - Most analyses are stateless and safe to call through package functions.
 - Composite analyses such as `ABC-XYZ` orchestrate lower-level packages instead
   of duplicating formulas.
@@ -28,8 +32,10 @@ This page documents implementation-wide rules that apply across packages.
 - Most outputs are sorted by the primary business metric in descending order.
 - Where relevant, ties are resolved by original input position through stable
   sort behavior.
-- Some outputs preserve `OriginalIndex` so composite analyses can merge data
-  safely.
+- If an analyzer reorders results relative to the input, result items should
+  preserve `OriginalIndex`.
+- Classification-style analyzers expose `Summary` when group counts or top-level
+  totals materially help interpretation.
 
 ## Defaulting Rules
 
@@ -41,10 +47,23 @@ This page documents implementation-wide rules that apply across packages.
 - `Churn`: defaults to `30` days at risk and `90` days churned.
 - `HML` and `SDE`: derive thresholds from data if explicit thresholds are not provided.
 
+## Validation Policy
+
+- Invalid configuration returns `error`.
+- Threshold ordering mistakes now return `error` instead of silently resetting to defaults.
+- Auto-defaulting remains available only for omitted optional configuration.
+- For `HML` and `SDE`, explicit threshold overrides must be complete and ordered correctly.
+- Composite analyses propagate validation errors from their underlying analyzers.
+- Structurally impossible bounded inputs now return `error`, for example:
+  negative order counts, negative lead times, invalid ratio fields, and
+  impossible service-level cycle relationships.
+
 ## Edge Case Policy
 
 - Non-positive numeric business inputs usually produce `0` for derived metrics
   instead of hard validation errors.
+- Open-ended commercial measures such as revenue and cost components are still
+  treated leniently unless a package documents stricter constraints.
 - Empty datasets return empty results.
 - Missing timestamps may be mapped to a default interpretation rather than
   rejected:
@@ -64,4 +83,4 @@ This page documents implementation-wide rules that apply across packages.
 
 - Current module path: `github.com/Sales-Analysis/abc-helper-lib`
 - Current Go version in `go.mod`: `1.23.4`
-- Version tags follow semantic versioning such as `v0.2.2`
+- Version tags follow semantic versioning such as `v0.3.0`

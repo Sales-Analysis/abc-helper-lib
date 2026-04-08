@@ -3,6 +3,8 @@ package clv
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Input struct {
@@ -55,6 +57,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateCustomer(customer); err != nil {
+			return Output{}, err
+		}
 
 		grossMarginRate := normalizeRatio(customer.GrossMarginRate)
 		retentionRate := normalizeRatio(customer.RetentionRate)
@@ -87,6 +92,25 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	})
 
 	return Output{Results: results}, nil
+}
+
+func validateCustomer(customer Customer) error {
+	if err := validation.RequireNonNegativeInt("customers[].Orders", customer.Orders); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("customers[].PeriodsObserved", customer.PeriodsObserved); err != nil {
+		return err
+	}
+	if err := validation.RequireRatio("customers[].GrossMarginRate", customer.GrossMarginRate); err != nil {
+		return err
+	}
+	if err := validation.RequireRatio("customers[].RetentionRate", customer.RetentionRate); err != nil {
+		return err
+	}
+	if err := validation.RequireRatio("customers[].DiscountRate", customer.DiscountRate); err != nil {
+		return err
+	}
+	return nil
 }
 
 func normalizeRatio(value float64) float64 {

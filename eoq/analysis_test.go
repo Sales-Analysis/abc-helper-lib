@@ -3,6 +3,7 @@ package eoq_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/eoq"
@@ -42,5 +43,19 @@ func TestAnalyzeReturnsZeroForInvalidEconomicInputs(t *testing.T) {
 
 	if output.Results[0].OptimalQuantity != 0 {
 		t.Fatalf("expected EOQ 0, got %.2f", output.Results[0].OptimalQuantity)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnNegativeInputs(t *testing.T) {
+	_, err := eoq.Analyze(context.Background(), eoq.Input{
+		Items: []eoq.Item{
+			{SKU: "A", Name: "Alpha", AnnualDemand: -1, OrderingCost: 50, HoldingCost: 2},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "invalid input") {
+		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }

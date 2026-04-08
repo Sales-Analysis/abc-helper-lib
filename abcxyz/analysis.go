@@ -15,6 +15,7 @@ type Input struct {
 
 type Output struct {
 	Results []ItemResult
+	Summary Summary
 }
 
 type Item struct {
@@ -42,6 +43,14 @@ type ItemResult struct {
 	CombinedGroup          string
 }
 
+type Summary struct {
+	TotalItems          int
+	ABCGroupCounts      map[string]int
+	XYZGroupCounts      map[string]int
+	CombinedGroupCounts map[string]int
+	SortedByValue       bool
+}
+
 func Analyze(ctx context.Context, input Input) (Output, error) {
 	if ctx != nil {
 		if err := ctx.Err(); err != nil {
@@ -67,7 +76,7 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	}
 
 	abcOutput, err := abc.AnalyzeDetailed(ctx, abc.Input{
-		Products:   abcProducts,
+		Items:      abcProducts,
 		Thresholds: input.ABCThresholds,
 	})
 	if err != nil {
@@ -110,5 +119,24 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
-	return Output{Results: results}, nil
+	return Output{
+		Results: results,
+		Summary: summarize(results),
+	}, nil
+}
+
+func summarize(results []ItemResult) Summary {
+	summary := Summary{
+		TotalItems:          len(results),
+		ABCGroupCounts:      make(map[string]int, 3),
+		XYZGroupCounts:      make(map[string]int, 3),
+		CombinedGroupCounts: make(map[string]int, len(results)),
+		SortedByValue:       true,
+	}
+	for _, result := range results {
+		summary.ABCGroupCounts[result.ABCGroup]++
+		summary.XYZGroupCounts[result.XYZGroup]++
+		summary.CombinedGroupCounts[result.CombinedGroup]++
+	}
+	return summary
 }

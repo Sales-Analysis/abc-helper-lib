@@ -26,6 +26,7 @@ VED classifies items by operational criticality.
 
 - `CriticalityScore`
 - `Group` in `V/E/D`
+- `Summary` with total items and `V/E/D` counts
 
 ## Rules
 

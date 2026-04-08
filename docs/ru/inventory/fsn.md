@@ -31,6 +31,7 @@ FSN классифицирует товары по частоте движени
 - `AverageMovement`
 - `LastMovementPeriod`
 - `Group` в `F/S/N`
+- `Summary` с общим числом товаров и counts по `F/S/N`
 
 ## Правила
 
