@@ -45,7 +45,7 @@
 1. Решить, будет ли legacy stateful API пакета `abc` удален или сохранен как тонкий compatibility layer.
 2. Решить, остается ли `abc.TotalRevenue` долгосрочным convenience-алиасом рядом с `abc.Output.Summary`.
 3. Решить, насколько далеко расширять `Summary` на non-classification outputs вроде `EOQ`, `CLV`, `GM/Contribution` и `Service Level`.
-4. Решить, достаточно ли generic `"invalid input: ..."` ошибок или библиотеке нужны typed validation errors.
+4. Решить, достаточно ли generic `"invalid input: ..."` ошибок или библиотеке нужно поднимать typed validation errors в публичный контракт.
 5. Закрыть слой robustness:
    fuzz tests, property-based tests и более широкий набор edge-case datasets.
 6. Автоматизировать release flow от version tag до GitHub Release notes.

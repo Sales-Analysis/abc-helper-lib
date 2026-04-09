@@ -58,6 +58,23 @@ This page documents implementation-wide rules that apply across packages.
   negative order counts, negative lead times, invalid ratio fields, and
   impossible service-level cycle relationships.
 
+## Validation Behavior Matrix
+
+| Case | Behavior | Notes |
+| :--- | :--- | :--- |
+| Optional configuration is omitted | Default | Examples: `ABC` thresholds, `XYZ` thresholds, `Safety Stock` service factor |
+| Threshold value is out of range | `error` | Examples: percent > `100`, negative threshold, invalid ratio |
+| Threshold ordering is invalid | `error` | Examples: `B <= A`, `Y <= X`, `ChurnDays <= AtRiskDays` |
+| Explicit threshold override is incomplete where full override is required | `error` | Applies to `HML` and `SDE` |
+| Bounded numeric input is negative | `error` | Examples: negative order counts, lead times, demand deviation |
+| Float input is `NaN` or `Inf` | `error` | Shared validation rejects non-finite values |
+| Cross-field bounded relationship is impossible | `error` | Examples: `FulfilledUnits > DemandedUnits`, `StockoutCycles > TotalCycles` |
+| Formula input is non-positive but structurally allowed | Derived metric becomes `0` | Examples: `EOQ`, `Safety Stock`, `Reorder Point` helper math |
+| Open-ended commercial measure is unusual but not structurally impossible | Lenient / package-defined | Examples: revenue or cost components stay package-specific unless documented otherwise |
+| Dataset is empty | Empty result | `Results` stays empty and summaries remain zeroed where applicable |
+| Timestamp is omitted | Default interpretation | `RFM` treats it as very old, `Churn` maps it to churn-threshold age |
+| Rate is supplied as ratio or percent where supported | Normalize | `CLV` accepts both `0..1` and `0..100` forms |
+
 ## Edge Case Policy
 
 - Non-positive numeric business inputs usually produce `0` for derived metrics
@@ -71,6 +88,13 @@ This page documents implementation-wide rules that apply across packages.
   `Churn` treats missing last order as churn-threshold age.
 - Some rates accept both ratio form (`0..1`) and percent form (`0..100`) where
   it is meaningful, for example in `CLV`.
+
+## Error Shape
+
+- The current validation contract returns regular `error` values.
+- Validation errors currently use the textual prefix `invalid input: ...`.
+- Typed validation errors are intentionally not part of the stable public API yet.
+- New integrations should depend on analyzer behavior and documented rules, not on concrete error types.
 
 ## Deprecated API
 

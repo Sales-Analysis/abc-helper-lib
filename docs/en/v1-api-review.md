@@ -43,7 +43,7 @@ should not build on them.
 1. Decide whether the legacy stateful `abc` API will be removed or retained as a thin compatibility layer.
 2. Decide whether `abc.TotalRevenue` remains as a long-term convenience alias beside `abc.Output.Summary`.
 3. Decide how far `Summary` should go across non-classification outputs such as `EOQ`, `CLV`, `GM/Contribution`, and `Service Level`.
-4. Decide whether generic `"invalid input: ..."` errors are sufficient or whether the module needs typed validation errors.
+4. Decide whether generic `"invalid input: ..."` errors remain sufficient or whether the module should promote typed validation errors into the public contract.
 5. Finish robustness work:
    fuzz tests, property-based tests, and broader edge-case datasets.
 6. Automate release flow from version tag to GitHub Release notes.
