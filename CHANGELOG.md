@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.3.1] - 2026-04-09
+
+### Changed
+
+- Added row-level validation for core inventory analyses:
+  `ABC`, `HML`, `SDE`, `XYZ`, `FSN`, `VED`, `Pareto`, and `GM/Contribution`.
+- Tightened customer validation rules for `RFM`, `CLV`, and `Churn`.
+- `RFM` and `Churn` now reject future `LastOrderAt` values instead of silently clipping them.
+- `ABC` now returns zero shares for zero-revenue datasets instead of propagating `NaN` values.
+
+### Documentation
+
+- Clarified validation behavior in `docs/en/api.md` and `docs/ru/api.md`.
+- Updated the documented validation matrix for commercial scalar inputs and timestamp handling.
+
+### Testing
+
+- Added regression coverage for the `ABC` zero-revenue edge case.
+- Added negative tests for row-level validation across the updated inventory and customer analyses.
+
 ## [v0.3.0] - 2026-04-08
 
 ### Added
@@ -84,7 +104,8 @@ All notable changes to this project will be documented in this file.
 - Added result building, structure refactoring, and initial tests.
 - Added the first README and changelog documentation.
 
-[Unreleased]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.3.1...HEAD
+[v0.3.1]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.3.0...v0.3.1
 [v0.3.0]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.2...v0.3.0
 [v0.2.2]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/Sales-Analysis/abc-helper-lib/compare/v0.2.0...v0.2.1
