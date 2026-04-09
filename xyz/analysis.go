@@ -71,6 +71,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		mean, stddev := demandStats(item.Demands)
 		cv := coefficientOfVariation(mean, stddev)
@@ -100,6 +103,15 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		Results: results,
 		Summary: summary,
 	}, nil
+}
+
+func validateItem(item Item) error {
+	for _, demand := range item.Demands {
+		if err := validation.RequireNonNegativeFloat("items[].Demands[]", demand); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (t Thresholds) normalized() (Thresholds, error) {

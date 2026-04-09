@@ -57,3 +57,17 @@ func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnInvalidDemandSeriesValue(t *testing.T) {
+	_, err := xyz.Analyze(context.Background(), xyz.Input{
+		Items: []xyz.Item{
+			{SKU: "A", Name: "A", Demands: []float64{100, math.NaN()}},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid demand series error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].Demands[]") {
+		t.Fatalf("expected demand series error, got %v", err)
+	}
+}

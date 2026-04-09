@@ -72,6 +72,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		total, activePeriods, lastMovementPeriod := movementStats(item.Movements)
 		periods := len(item.Movements)
@@ -115,6 +118,15 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		Results: results,
 		Summary: summary,
 	}, nil
+}
+
+func validateItem(item Item) error {
+	for _, movement := range item.Movements {
+		if err := validation.RequireNonNegativeFloat("items[].Movements[]", movement); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (t Thresholds) normalized() (Thresholds, error) {

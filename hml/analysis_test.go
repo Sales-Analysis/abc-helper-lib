@@ -2,6 +2,7 @@ package hml_test
 
 import (
 	"context"
+	"math"
 	"strings"
 	"testing"
 
@@ -75,5 +76,19 @@ func TestAnalyzeReturnsErrorOnIncompleteThresholdOverride(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "invalid input") {
 		t.Fatalf("expected invalid input error, got %v", err)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidUnitCost(t *testing.T) {
+	_, err := hml.Analyze(context.Background(), hml.Input{
+		Items: []hml.Item{
+			{SKU: "A", Name: "A", UnitCost: math.NaN()},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid unit cost error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].UnitCost") {
+		t.Fatalf("expected unit cost error, got %v", err)
 	}
 }

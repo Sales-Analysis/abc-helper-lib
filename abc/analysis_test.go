@@ -252,3 +252,47 @@ func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnInvalidProductValues(t *testing.T) {
+	_, err := Analyze(context.Background(), Input{
+		Items: []Item{
+			{SKU: "A", Name: "Alpha", Quantity: -1, Price: 10},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid product values error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].Quantity") {
+		t.Fatalf("expected quantity error, got %v", err)
+	}
+}
+
+func TestAnalyzeHandlesZeroGrandTotalWithoutNaN(t *testing.T) {
+	output, err := Analyze(context.Background(), Input{
+		Items: []Item{
+			{SKU: "A", Name: "Alpha", Quantity: 0, Price: 100},
+			{SKU: "B", Name: "Beta", Quantity: 0, Price: 50},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Analyze returned error: %v", err)
+	}
+
+	if output.TotalRevenue != 0 {
+		t.Fatalf("expected zero total revenue, got %.2f", output.TotalRevenue)
+	}
+	for _, result := range output.Results {
+		if math.IsNaN(result.ShareTotal) || math.IsInf(result.ShareTotal, 0) {
+			t.Fatalf("expected finite ShareTotal, got %+v", result)
+		}
+		if math.IsNaN(result.ShareAccumulated) || math.IsInf(result.ShareAccumulated, 0) {
+			t.Fatalf("expected finite ShareAccumulated, got %+v", result)
+		}
+		if result.ShareTotal != 0 {
+			t.Fatalf("expected zero ShareTotal, got %.4f", result.ShareTotal)
+		}
+		if result.ShareAccumulated != 0 {
+			t.Fatalf("expected zero ShareAccumulated, got %.4f", result.ShareAccumulated)
+		}
+	}
+}

@@ -3,6 +3,7 @@ package gmcontribution_test
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/Sales-Analysis/abc-helper-lib/gmcontribution"
@@ -50,5 +51,19 @@ func TestAnalyzeSortsByContributionMargin(t *testing.T) {
 
 	if output.Results[0].SKU != "A" {
 		t.Fatalf("expected first SKU A, got %s", output.Results[0].SKU)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidMoneyInputs(t *testing.T) {
+	_, err := gmcontribution.Analyze(context.Background(), gmcontribution.Input{
+		Items: []gmcontribution.Item{
+			{SKU: "A", Name: "Alpha", Revenue: math.NaN()},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid money input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].Revenue") {
+		t.Fatalf("expected revenue error, got %v", err)
 	}
 }

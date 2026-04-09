@@ -75,6 +75,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	items := make([]indexedItem, len(input.Items))
 	var totalValue float64
 	for i, item := range input.Items {
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 		items[i] = indexedItem{Item: item, OriginalIndex: i}
 		totalValue += item.Value
 	}
@@ -135,6 +138,13 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		Results: results,
 		Summary: summary,
 	}, nil
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].Value", item.Value); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (t Thresholds) normalized() (Thresholds, error) {

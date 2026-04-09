@@ -3,6 +3,8 @@ package gmcontribution
 import (
 	"context"
 	"sort"
+
+	"github.com/Sales-Analysis/abc-helper-lib/internal/validation"
 )
 
 type Input struct {
@@ -51,6 +53,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		grossMargin := item.Revenue - item.COGS
 		contributionMargin := item.Revenue - item.VariableCost
@@ -78,6 +83,22 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	})
 
 	return Output{Results: results}, nil
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].Revenue", item.Revenue); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].COGS", item.COGS); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].VariableCost", item.VariableCost); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].FixedCost", item.FixedCost); err != nil {
+		return err
+	}
+	return nil
 }
 
 func safeRate(value float64, base float64) float64 {

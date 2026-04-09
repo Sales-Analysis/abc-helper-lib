@@ -77,3 +77,17 @@ func TestAnalyzeReturnsErrorOnIncompleteThresholdOverride(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnNegativeLeadTime(t *testing.T) {
+	_, err := sde.Analyze(context.Background(), sde.Input{
+		Items: []sde.Item{
+			{SKU: "A", Name: "A", LeadTimeDays: -1},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid lead time error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].LeadTimeDays") {
+		t.Fatalf("expected lead time error, got %v", err)
+	}
+}

@@ -50,6 +50,17 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		}
 	}
 
+	for _, item := range input.Items {
+		if ctx != nil {
+			if err := ctx.Err(); err != nil {
+				return Output{}, err
+			}
+		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
+	}
+
 	thresholds, err := normalizedThresholds(input.Items, input.Thresholds)
 	if err != nil {
 		return Output{}, err
@@ -92,6 +103,13 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		Results: results,
 		Summary: summary,
 	}, nil
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequireNonNegativeFloat("items[].UnitCost", item.UnitCost); err != nil {
+		return err
+	}
+	return nil
 }
 
 func normalizedThresholds(items []Item, thresholds Thresholds) (Thresholds, error) {

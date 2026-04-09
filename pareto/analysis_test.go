@@ -78,3 +78,17 @@ func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnInvalidItemValue(t *testing.T) {
+	_, err := pareto.Analyze(context.Background(), pareto.Input{
+		Items: []pareto.Item{
+			{SKU: "A", Name: "Alpha", Value: -1},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid item value error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].Value") {
+		t.Fatalf("expected item value error, got %v", err)
+	}
+}

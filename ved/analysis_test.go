@@ -78,3 +78,17 @@ func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnInvalidCriticalityScore(t *testing.T) {
+	_, err := ved.Analyze(context.Background(), ved.Input{
+		Items: []ved.Item{
+			{SKU: "A", Name: "A", CriticalityScore: 101},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid criticality score error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].CriticalityScore") {
+		t.Fatalf("expected criticality score error, got %v", err)
+	}
+}

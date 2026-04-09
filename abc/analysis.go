@@ -138,6 +138,11 @@ func AnalyzeDetailed(ctx context.Context, input Input) (DetailedOutput, error) {
 	}
 
 	products := input.normalizedItems()
+	for _, product := range products {
+		if err := validateProduct(product); err != nil {
+			return DetailedOutput{}, err
+		}
+	}
 	analysis := New()
 
 	priceTotal := analysis.calculatePriceTotal(products)
@@ -154,6 +159,16 @@ func AnalyzeDetailed(ctx context.Context, input Input) (DetailedOutput, error) {
 		TotalRevenue: grandTotal,
 		Summary:      summary,
 	}, nil
+}
+
+func validateProduct(product Product) error {
+	if err := validation.RequireNonNegativeInt("items[].Quantity", product.Quantity); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("items[].Price", product.Price); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (in Input) normalizedItems() []Product {
@@ -200,6 +215,12 @@ func (a *ABC) calculateGrandTotal(totals []float64) float64 {
 
 func (a *ABC) calculateCostPercentage(pairs byValue, grandTotal float64) []float64 {
 	costPercentage := make([]float64, 0, len(pairs))
+	if grandTotal <= 0 {
+		for range pairs {
+			costPercentage = append(costPercentage, 0)
+		}
+		return costPercentage
+	}
 	for _, value := range pairs {
 		v := (value.value / grandTotal) * 100
 		costPercentage = append(costPercentage, v)

@@ -67,6 +67,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateItem(item); err != nil {
+			return Output{}, err
+		}
 
 		group := classify(item.CriticalityScore, thresholds)
 		results[i] = ItemResult{
@@ -97,6 +100,13 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		Results: results,
 		Summary: summary,
 	}, nil
+}
+
+func validateItem(item Item) error {
+	if err := validation.RequirePercentAllowZero("items[].CriticalityScore", item.CriticalityScore); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (t Thresholds) normalized() (Thresholds, error) {

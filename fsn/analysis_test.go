@@ -2,6 +2,7 @@ package fsn_test
 
 import (
 	"context"
+	"math"
 	"strings"
 	"testing"
 
@@ -79,5 +80,19 @@ func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "invalid input") {
 		t.Fatalf("expected invalid input error, got %v", err)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnInvalidMovementSeriesValue(t *testing.T) {
+	_, err := fsn.Analyze(context.Background(), fsn.Input{
+		Items: []fsn.Item{
+			{SKU: "A", Name: "A", Movements: []float64{1, math.Inf(1)}},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid movement series error, got nil")
+	}
+	if !strings.Contains(err.Error(), "items[].Movements[]") {
+		t.Fatalf("expected movement series error, got %v", err)
 	}
 }
