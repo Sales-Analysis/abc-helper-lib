@@ -95,6 +95,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 }
 
 func validateCustomer(customer Customer) error {
+	if err := validation.RequireNonNegativeFloat("customers[].Revenue", customer.Revenue); err != nil {
+		return err
+	}
 	if err := validation.RequireNonNegativeInt("customers[].Orders", customer.Orders); err != nil {
 		return err
 	}
@@ -108,6 +111,9 @@ func validateCustomer(customer Customer) error {
 		return err
 	}
 	if err := validation.RequireRatio("customers[].DiscountRate", customer.DiscountRate); err != nil {
+		return err
+	}
+	if err := validation.RequireNonNegativeFloat("customers[].AcquisitionCost", customer.AcquisitionCost); err != nil {
 		return err
 	}
 	return nil

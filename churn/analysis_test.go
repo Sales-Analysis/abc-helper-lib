@@ -71,6 +71,31 @@ func TestAnalyzeSupportsCustomThresholds(t *testing.T) {
 	}
 }
 
+func TestAnalyzeTreatsMissingLastOrderAsChurnBoundary(t *testing.T) {
+	now := time.Date(2026, time.April, 6, 0, 0, 0, 0, time.UTC)
+
+	output, err := churn.Analyze(context.Background(), churn.Input{
+		AnalysisTime: now,
+		Customers: []churn.Customer{
+			{CustomerID: "A", Name: "Alpha"},
+			{CustomerID: "B", Name: "Beta", LastOrderAt: now.AddDate(0, 0, -10)},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Analyze returned error: %v", err)
+	}
+
+	if output.Results[0].CustomerID != "A" {
+		t.Fatalf("expected missing-date customer first, got %s", output.Results[0].CustomerID)
+	}
+	if output.Results[0].DaysSinceLastOrder != 90 {
+		t.Fatalf("expected missing-date customer days 90, got %d", output.Results[0].DaysSinceLastOrder)
+	}
+	if output.Results[0].Status != "Churned" {
+		t.Fatalf("expected missing-date customer status Churned, got %s", output.Results[0].Status)
+	}
+}
+
 func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 	_, err := churn.Analyze(context.Background(), churn.Input{
 		Thresholds: churn.Thresholds{
@@ -83,5 +108,22 @@ func TestAnalyzeReturnsErrorOnInvalidThresholds(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "invalid input") {
 		t.Fatalf("expected invalid input error, got %v", err)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnFutureLastOrder(t *testing.T) {
+	now := time.Date(2026, time.April, 6, 0, 0, 0, 0, time.UTC)
+
+	_, err := churn.Analyze(context.Background(), churn.Input{
+		AnalysisTime: now,
+		Customers: []churn.Customer{
+			{CustomerID: "A", Name: "Alpha", LastOrderAt: now.AddDate(0, 0, 1)},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "customers[].LastOrderAt") {
+		t.Fatalf("expected last order error, got %v", err)
 	}
 }

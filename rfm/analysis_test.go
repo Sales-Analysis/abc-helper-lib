@@ -75,3 +75,34 @@ func TestAnalyzeReturnsErrorOnNegativeOrders(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnInvalidMonetaryValue(t *testing.T) {
+	_, err := rfm.Analyze(context.Background(), rfm.Input{
+		Customers: []rfm.Customer{
+			{CustomerID: "A", Name: "Alpha", Orders: 1, MonetaryValue: -1},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "customers[].MonetaryValue") {
+		t.Fatalf("expected monetary value error, got %v", err)
+	}
+}
+
+func TestAnalyzeReturnsErrorOnFutureLastOrder(t *testing.T) {
+	now := time.Date(2026, time.April, 6, 0, 0, 0, 0, time.UTC)
+
+	_, err := rfm.Analyze(context.Background(), rfm.Input{
+		AnalysisTime: now,
+		Customers: []rfm.Customer{
+			{CustomerID: "A", Name: "Alpha", LastOrderAt: now.AddDate(0, 0, 1), Orders: 1, MonetaryValue: 100},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected invalid input error, got nil")
+	}
+	if !strings.Contains(err.Error(), "customers[].LastOrderAt") {
+		t.Fatalf("expected last order error, got %v", err)
+	}
+}

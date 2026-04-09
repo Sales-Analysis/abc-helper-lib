@@ -78,6 +78,9 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
+		if err := validateCustomer(customer, analysisTime); err != nil {
+			return Output{}, err
+		}
 
 		days := daysSince(analysisTime, customer.LastOrderAt)
 		status := classify(days, thresholds)
@@ -116,6 +119,13 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 		Results: results,
 		Summary: summary,
 	}, nil
+}
+
+func validateCustomer(customer Customer, analysisTime time.Time) error {
+	if !customer.LastOrderAt.IsZero() && customer.LastOrderAt.After(analysisTime) {
+		return validation.Invalidf("customers[].LastOrderAt must not be in the future")
+	}
+	return nil
 }
 
 func (t Thresholds) normalized() (Thresholds, error) {

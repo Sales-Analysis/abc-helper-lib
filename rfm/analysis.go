@@ -62,7 +62,7 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 				return Output{}, err
 			}
 		}
-		if err := validateCustomer(customer); err != nil {
+		if err := validateCustomer(customer, analysisTime); err != nil {
 			return Output{}, err
 		}
 
@@ -101,9 +101,15 @@ func Analyze(ctx context.Context, input Input) (Output, error) {
 	return Output{Results: results}, nil
 }
 
-func validateCustomer(customer Customer) error {
+func validateCustomer(customer Customer, analysisTime time.Time) error {
 	if err := validation.RequireNonNegativeInt("customers[].Orders", customer.Orders); err != nil {
 		return err
+	}
+	if err := validation.RequireNonNegativeFloat("customers[].MonetaryValue", customer.MonetaryValue); err != nil {
+		return err
+	}
+	if !customer.LastOrderAt.IsZero() && customer.LastOrderAt.After(analysisTime) {
+		return validation.Invalidf("customers[].LastOrderAt must not be in the future")
 	}
 	return nil
 }

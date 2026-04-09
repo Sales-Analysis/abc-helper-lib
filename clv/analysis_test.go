@@ -88,3 +88,55 @@ func TestAnalyzeReturnsErrorOnInvalidRates(t *testing.T) {
 		t.Fatalf("expected invalid input error, got %v", err)
 	}
 }
+
+func TestAnalyzeReturnsErrorOnInvalidMoneyFields(t *testing.T) {
+	tests := []struct {
+		name     string
+		customer clv.Customer
+		field    string
+	}{
+		{
+			name: "revenue",
+			customer: clv.Customer{
+				CustomerID:      "A",
+				Name:            "Alpha",
+				Revenue:         math.NaN(),
+				Orders:          10,
+				PeriodsObserved: 5,
+				GrossMarginRate: 0.4,
+				RetentionRate:   0.8,
+				DiscountRate:    0.1,
+			},
+			field: "customers[].Revenue",
+		},
+		{
+			name: "acquisition cost",
+			customer: clv.Customer{
+				CustomerID:      "A",
+				Name:            "Alpha",
+				Revenue:         1000,
+				Orders:          10,
+				PeriodsObserved: 5,
+				GrossMarginRate: 0.4,
+				RetentionRate:   0.8,
+				DiscountRate:    0.1,
+				AcquisitionCost: -1,
+			},
+			field: "customers[].AcquisitionCost",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := clv.Analyze(context.Background(), clv.Input{
+				Customers: []clv.Customer{tt.customer},
+			})
+			if err == nil {
+				t.Fatal("expected invalid input error, got nil")
+			}
+			if !strings.Contains(err.Error(), tt.field) {
+				t.Fatalf("expected %s error, got %v", tt.field, err)
+			}
+		})
+	}
+}

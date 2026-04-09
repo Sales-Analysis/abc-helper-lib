@@ -70,22 +70,25 @@ This page documents implementation-wide rules that apply across packages.
 | Float input is `NaN` or `Inf` | `error` | Shared validation rejects non-finite values |
 | Cross-field bounded relationship is impossible | `error` | Examples: `FulfilledUnits > DemandedUnits`, `StockoutCycles > TotalCycles` |
 | Formula input is non-positive but structurally allowed | Derived metric becomes `0` | Examples: `EOQ`, `Safety Stock`, `Reorder Point` helper math |
-| Open-ended commercial measure is unusual but not structurally impossible | Lenient / package-defined | Examples: revenue or cost components stay package-specific unless documented otherwise |
+| Commercial scalar input is used directly by ranking or formula logic | Usually `error` when negative or non-finite | Examples: `Pareto.Value`, `GM/Contribution` money fields, `RFM.MonetaryValue`, `CLV.Revenue` |
 | Dataset is empty | Empty result | `Results` stays empty and summaries remain zeroed where applicable |
 | Timestamp is omitted | Default interpretation | `RFM` treats it as very old, `Churn` maps it to churn-threshold age |
+| Timestamp is in the future | `error` | `RFM` and `Churn` reject future `LastOrderAt` values |
 | Rate is supplied as ratio or percent where supported | Normalize | `CLV` accepts both `0..1` and `0..100` forms |
 
 ## Edge Case Policy
 
 - Non-positive numeric business inputs usually produce `0` for derived metrics
   instead of hard validation errors.
-- Open-ended commercial measures such as revenue and cost components are still
-  treated leniently unless a package documents stricter constraints.
+- Commercial scalar fields that directly affect ranking or financial formulas
+  are increasingly validated as finite and non-negative.
 - Empty datasets return empty results.
 - Missing timestamps may be mapped to a default interpretation rather than
   rejected:
   `RFM` treats missing recency as very old,
   `Churn` treats missing last order as churn-threshold age.
+- Future timestamps are rejected where the analyzer contract depends on
+  historical recency, currently in `RFM` and `Churn`.
 - Some rates accept both ratio form (`0..1`) and percent form (`0..100`) where
   it is meaningful, for example in `CLV`.
 
